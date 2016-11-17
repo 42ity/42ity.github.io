@@ -1,85 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="generator" content="AsciiDoc 8.6.9, html5 backend 4.5.0">
+    <title>Welcome to 42ITy!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- AsciiDoc Bootstrap styles -->
+    <link rel="stylesheet" type="text/css" id="bootstrapTheme" href="css/asciidoc-bootstrap.min.css">
 
-    <title>42ITy - Welcome</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="css/navbar-fixed-top.css" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="js/ie-emulation-modes-warning.js"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="js/html5shiv.min.js"></script>
-      <script src="js/respond.min.js"></script>
+    <!--[if (lt IE 9) & (!IEMobile)]>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
     <![endif]-->
+    <!-- 42ITy stylesheet -->
+    <link rel="stylesheet" type="text/css" href="css/42ity.css">
 
-    <!-- 42ITy CSS -->
-    <link href="css/42ITy.css" rel="stylesheet">
+    <!-- favorite icon -->
+    <link rel="shortcut icon" href="./favicon.ico">
   </head>
+  <body id="toc-top">
+    <div id="page">
+  <header role="banner" class="Fixed">
 
-  <body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 
-    <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+    <div class="container">
+
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
+          <a class="navbar-brand" href="./">42ITy</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="./">42ITy</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Home</a></li>
-             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Download<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="source.html">Source code</a></li>
-                <li><a href="binaries.html">Binaries</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="hcl.html">Supported Hardware</a></li>
-                <!--li role="separator" class="divider"></li>
-                <li><a href="presentation.html">Overall presentation</a></li-->
-              </ul>
-            </li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="contact.html">Contact</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
+        </div> <!-- /.navbar-header -->
+
+        <div class="navbar-collapse collapse">
+            <!-- Fixed navbar -->
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Download<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="source.html">Source code</a></li>
+                        <li><a href="binaries.html">Binaries</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="hcl.html">Supported Hardware</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div> <!-- /.navbar-collapse -->
+
+    </div>  <!-- /.container -->
     </nav>
+  </header>
 
-    <div class="container">
 
-      <!-- Main component for a primary marketing message or call to action -->
-      <div class="jumbotron">
+<div class="container">
+      <div class="jumbotron jumbotron-navbar-fixed-top">
         <h1>Welcome to 42ITy!</h1>
         <p>42ITy™ is a next generation platform for data center service optimization that aims to bridge
-        the gap between the traditional silos of IT and facility management.</p>
+        the gap between the traditional silos of IT and facility management. </p>
         <p>We believe that an open, community based approach, is the best way to ensure
         broad and vendor agnostic support, while leveraging and giving back to leading
         open source software components including <a href="http://networkupstools.org">NUT (Network UPS Tools)</a>,
@@ -89,37 +84,54 @@
           <a class="btn btn-lg btn-primary" href="about.html" role="button">About &raquo;</a>
         </p>
       </div>
+</div>
 
-      <hr />
-      <h1 class="underlined">Our mission</h1>
-      <hr />
-      <p>The 42ITY™ project exists to provide the most open, flexible platform
-      in the industry for enabling data center service optimization.</p>
-      Proprietary, monolithic solutions for data center infrastructure management
-      have often failed to provide the expected customer value because they are
-      too costly to integrate & deploy in heterogeneous data center environments.  
-      <p>42ITy™ addresses these issues by providing an intuitive data center
-      monitoring platform based on a modern micro-services architecture with open
-      REST APIs, facilitating integration with existing solutions.  And best of
-      all, it is open source! This enables data center operators and data center
-      ecosystem solution partners to provide a seamless monitoring experience even
-      in the most heterogeneous environments via a common framework and APIs.</p>
-      <hr />
+  <div id="content" class="container">
 
-      <h1 class="underlined">Recent Updates </h1>
-      <hr />
-      <div class="jumbotron">
-        <ul>
-        <!-- li>Date..., 2016: 42ITy source code starts to be released on <a href="http://github.com/42ity">github.com/42ity</a>.</li -->
-        <li>October 5th, 2016: Initial announcement of 42ITy™ availability.</li>
-        <li>October 5th, 2016: Initial announcement of <a href="http://www.eaton.eu/ipminfrastructure">Eaton Intelligent Power Management Infrastructure and Intelligent Power Controller</a> availability.</li>
-        </ul>
-      </div>
-    </div> <!-- /container -->
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <div class="row">
+
+
+
+        <div class="col-md-12" role="main">
+
+<div class="section">
+    <h1 class="page-header" id="our_mission">Our mission</h1>
+<div class="paragraph"><p>The 42ITY™ project exists to provide the most open, flexible platform in the
+industry for enabling data center service optimization.</p></div>
+<div class="paragraph"><p>Proprietary, monolithic solutions for data center infrastructure management have
+often failed to provide the expected customer value because they are too costly
+to integrate &amp; deploy in heterogeneous data center environments.</p></div>
+<div class="paragraph"><p>42ITy™ addresses these issues by providing an intuitive data center monitoring
+platform based on a modern micro-services architecture with open REST APIs,
+facilitating integration with existing solutions. And best of all, it is open
+source! This enables data center operators and data center ecosystem solution
+partners to provide a seamless monitoring experience even in the most
+heterogeneous environments via a common framework and APIs.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="recent_updates">Recent Updates</h1>
+<div class="ulist"><ul>
+<li>
+<p>
+October 5th, 2016: Initial announcement of 42ITy™ availability.
+</p>
+</li>
+<li>
+<p>
+October 5th, 2016: Initial announcement of 
+<a href="http://www.eaton.eu/ipminfrastructure">Eaton Intelligent Power Management Infrastructure and Intelligent Power Controller</a> availability.
+</p>
+</li>
+</ul></div>
+</div>
     <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/42ity.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+
+    <!-- Remove footnotes if empty block -->
+    <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>
+
+    <script type="text/javascript">$(function(){ if ($("#dropdown-menu-versions")) $("#dropdown-menu-versions").parent().remove(); });</script>
+    </div> <!-- page -->
   </body>
 </html>
