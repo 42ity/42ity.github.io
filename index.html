@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="css/42ity.css">
 
     <!-- favorite icon -->
-    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="images/icons//favicon.ico">
   </head>
   <body id="toc-top">
     <div id="page">
@@ -54,6 +54,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="hcl.html">Supported Hardware</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="presentation.html">Overall presentation</a></li>
+                        <li><a href="contributing.html">Contributor guide</a></li>
                     </ul>
                 </li>
             </ul>
@@ -73,12 +76,12 @@
 <div class="container">
       <div class="jumbotron jumbotron-navbar-fixed-top">
         <h1>Welcome to 42ITy!</h1>
-        <p>42ITy™ is a next generation platform for data center service optimization that aims to bridge
+        <p>42ITy&trade; is a next generation platform for data center service optimization that aims to bridge
         the gap between the traditional silos of IT and facility management. </p>
         <p>We believe that an open, community based approach, is the best way to ensure
         broad and vendor agnostic support, while leveraging and giving back to leading
         open source software components including <a href="http://networkupstools.org">NUT (Network UPS Tools)</a>,
-        <a href="http://zeromq.org">0MQ</a>/<a href="https://github.com/zeromq/malamute">Malamute</a>
+        <a href="http://zeromq.org">ØMQ</a>/<a href="https://github.com/zeromq/malamute">Malamute</a>
         & <a href="https://mariadb.org/">MariaDB</a>, among others.</p>
         <p>
           <a class="btn btn-lg btn-primary" href="about.html" role="button">About &raquo;</a>
@@ -96,12 +99,12 @@
 
 <div class="section">
     <h1 class="page-header" id="our_mission">Our mission</h1>
-<div class="paragraph"><p>The 42ITY™ project exists to provide the most open, flexible platform in the
+<div class="paragraph"><p>The 42ITY&#8482; project exists to provide the most open, flexible platform in the
 industry for enabling data center service optimization.</p></div>
 <div class="paragraph"><p>Proprietary, monolithic solutions for data center infrastructure management have
 often failed to provide the expected customer value because they are too costly
 to integrate &amp; deploy in heterogeneous data center environments.</p></div>
-<div class="paragraph"><p>42ITy™ addresses these issues by providing an intuitive data center monitoring
+<div class="paragraph"><p>42ITy&#8482; addresses these issues by providing an intuitive data center monitoring
 platform based on a modern micro-services architecture with open REST APIs,
 facilitating integration with existing solutions. And best of all, it is open
 source! This enables data center operators and data center ecosystem solution
@@ -113,7 +116,12 @@ heterogeneous environments via a common framework and APIs.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
-October 5th, 2016: Initial announcement of 42ITy™ availability.
+February 8th, 2017: 42ITy&#8482; source-code and updated website availability.
+</p>
+</li>
+<li>
+<p>
+October 5th, 2016: Initial announcement of 42ITy&#8482; availability.
 </p>
 </li>
 <li>
@@ -124,9 +132,14 @@ October 5th, 2016: Initial announcement of
 </li>
 </ul></div>
 </div>
+        </div>  <!-- /.col-md-12 -->
+    </div>  <!-- /.row -->
     <script src="js/jquery.min.js"></script>
     <script src="js/42ity.js"></script>
     <script src="./js/bootstrap.min.js"></script>
+    <script src="js/asciidoc.js"></script>
+    <!-- Install TOC and/or footnotes (if necessary) -->
+    <script type="text/javascript">asciidoc.install(2);</script>
 
     <!-- Remove footnotes if empty block -->
     <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="generator" content="AsciiDoc 8.6.9, html5 backend 4.5.0">
+    <title>Documentation Recommendation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- AsciiDoc Bootstrap styles -->
+    <link rel="stylesheet" type="text/css" id="bootstrapTheme" href="css/asciidoc-bootstrap.min.css">
+
+    <!--[if (lt IE 9) & (!IEMobile)]>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <!-- 42ITy stylesheet -->
+    <link rel="stylesheet" type="text/css" href="css/42ity.css">
+
+    <!-- favorite icon -->
+    <link rel="shortcut icon" href="images/icons//favicon.ico">
+  </head>
+  <body id="toc-top">
+    <div id="page">
+  <header role="banner" class="Fixed">
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+    <div class="container">
+
+        <div class="navbar-header">
+          <a class="navbar-brand" href="./">42ITy</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div> <!-- /.navbar-header -->
+
+        <div class="navbar-collapse collapse">
+            <!-- Fixed navbar -->
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Download<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="source.html">Source code</a></li>
+                        <li><a href="binaries.html">Binaries</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="hcl.html">Supported Hardware</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="presentation.html">Overall presentation</a></li>
+                        <li><a href="contributing.html">Contributor guide</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div> <!-- /.navbar-collapse -->
+
+    </div>  <!-- /.container -->
+    </nav>
+  </header>
+
+
+  <div id="content" class="container">
+
+    <div class="row">
+
+
+
+        <div class="col-md-12" role="main">
+
+<div class="section">
+    <h1 class="page-header" id="documentation_style_and_format_recommendation_for_the_project">Documentation style and format recommendation for the project</h1>
+<div class="paragraph"><p>The following recommendations apply to text provided as part of project sources
+(including the <code>README</code>, <code>AUTHORS</code> and <code>LICENSE</code> files mandated in
+
+<a href="class.html">CLASS (C Language Style for Scalability)</a> and in-line comments
+which may be parsed into text files and further into generated documentation)
+in order to facilitate a common style of original readable textual content,
+and to minimize the amount of tools needed to re-process it into different
+end-user formats.</p></div>
+<div class="paragraph"><p>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in IETF RFC 2119 (see
+"<a href="http://tools.ietf.org/html/rfc2119">Key words for use in RFCs to
+Indicate Requirement Levels</a>").</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Guidelines regarding plaintext markup formats:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Documentation provided and maintained as part of the project SHALL NOT
+use file formats that require non-FOSS software for processing. Plaintext
+files are preferred for text documentation, PNG for raster graphics and
+SVG for vector graphics. Project SHOULD consider that the build farm hosts
+MAY not have installed the graphical environment and desktop/GUI document
+processing software, so optional generation of documentation in formats
+comfortable for end-user consumption SHOULD rely on common processing
+tools outlined in the <a href="#dependencies">"Dependencies"</a> section of CLASS.
+</p>
+</li>
+<li>
+<p>
+Committed text and documentation files SHOULD use <code>asciidoc</code> markup if
+they are structured (including sources for "man" pages, project standards
+and contracts, user or developer instructions, etc.)
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+For details on the syntax and examples of <code>asciidoc</code> markup see
+<a href="http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/">http://asciidoctor.org/docs/asciidoc-syntax-quick-reference/</a> and its source
+<a href="https://raw.githubusercontent.com/asciidoctor/asciidoctor.org/master/docs/asciidoc-syntax-quick-reference.adoc">https://raw.githubusercontent.com/asciidoctor/asciidoctor.org/master/docs/asciidoc-syntax-quick-reference.adoc</a>
+</p>
+</li>
+<li>
+<p>
+There are various reasonable choices for some aspect of text formatting
+and style. Whichever one is picked, it SHOULD apply to the whole document
+or its considerably large portions (e.g. lists of items, as detailed below).
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Texts MAY be in other markups (e.g. plain ASCII, or markdown) only if
+they were originally imported from other sources or projects, and if regular
+subsequent synchronisation, re-import or other comparison to origin of
+these files is anticipated (e.g. a copy of the standard text of a license
+chosen by the project, or third party project sources co-distributed as a
+dependency&#8201;&#8212;&#8201;where such projects encourage co-distribution rather than
+release/package dependencies with a clean separation of borders), or if
+the text file is unstructured (e.g. a line-by-line list of authors without
+categories&#8230; note that almost anything else is inherently structured).
+</p>
+</li>
+<li>
+<p>
+Project building recipes MAY assume by default that <code>asciidoc</code> program
+is the proper tool for processing of committed (or interim generated) text
+files into other end-user formats, such as MAN, HTML or PDF variants of the
+documentation. Any other cases should be specifically handled by the recipes
+as exceptions to the common rule.
+</p>
+</li>
+<li>
+<p>
+It is RECOMMENDED that source text files using <code>asciidoc</code>-compatible
+markup be named with an <code>.asciidoc</code> or <code>.adoc</code> extension (consistently for
+the whole project), rather than the common indeterminate <code>.txt</code> extension
+or lack of any extension.
+</p>
+</li>
+<li>
+<p>
+It is RECOMMENDED that text files in non-<code>asciidoc</code> compatible markups
+use their appropriate extensions (e.g. <code>.md</code> for MarkDown), rather than a
+common indeterminate <code>.txt</code> extension or lack of any extension.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Guidelines on use of whitespaces and blank lines:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Paragraphs, separate lists of items, code example blocks and other similar
+groupings of content lines processed specially by the rendering tools SHALL
+be separated (preceded and followed) by at least one blank line. Section
+headers MAY be visibly stressed by preceding or surrounding them with two
+blank lines; if picked, this formatting option should be applied consistently
+to the whole document.
+</p>
+</li>
+<li>
+<p>
+Trailing whitespace characters (SPACE, TAB) and lines fully consisting of
+whitespace SHOULD be avoided.
+</p>
+</li>
+<li>
+<p>
+Sequences of more than one whitespace (e.g. two or more SPACE characters in
+a row) SHOULD be avoided, wherever such sequences are not part of indentation
+or do not carry other contextual meaning.
+</p>
+</li>
+<li>
+<p>
+If a style is picked to separate sentences in a paragaph with a period <code>.</code>
+followed by two SPACE characters, this style SHALL be used consistenly in
+the whole document.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Depending on contents, one of several formatting styles may be applicable
+to lists of items:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Lines of bulleted or numbered lists SHALL have the same style regarding a
+final punctuation character, consistent within at least the list itself&#8201;&#8212;&#8201;usually semicolon <code>;</code> for relatively short entries, period <code>.</code> for full
+sentences (especially when there are several sentences per list item), and
+a comma <code>,</code> optionally with trailing conjunctions (<code>and</code>/<code>or</code>)  for shortest
+entries that can be read together as parts of a larger sentence; and the last
+line of the list SHALL end with a period <code>.</code> character.
+</p>
+</li>
+<li>
+<p>
+An alternative style is to have <em>no trailing punctuation</em> for list items
+which otherwise are each a single regular sentence. For lists represented
+with such choice of style, the consistent option is that the last line also
+has no punctuation (no period <code>.</code>) as its last character.
+</p>
+</li>
+<li>
+<p>
+If an explanatory (semi-)sentence or paragraph precedes such a list, that
+sentence SHOULD end with a colon <code>:</code> followed by a blank line (for <code>asciidoc</code>
+markup). If the preceding sentence or paragraph is not an introduction into
+the contents of the list, it SHOULD be formatted as a usual paragraph, ending
+with a period <code>.</code> character.
+</p>
+</li>
+<li>
+<p>
+Nested lists are considered as separate lists; the last line of each such
+list at the same level of indentation SHALL end with a period <code>.</code> character
+(if any punctuation is used to terminate preceding lines of this list).
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Standard ASCII characters SHALL be preferred over equivalents from the
+extended Unicode range, such as:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+three period characters <code>...</code> over an an ellipsis character "&#8230;", or
+</p>
+</li>
+<li>
+<p>
+the numerous ways to type a single or double quote, or
+</p>
+</li>
+<li>
+<p>
+the use of plain "minus" <code>-</code> or double-minus <code>--</code> characters over different
+long-dash characters, and
+</p>
+</li>
+<li>
+<p>
+use of <code>asciidoc</code> (or equivalent) plaintext markup like <code>(TM)</code> or <code>(C)</code>
+instead of singular characters like &#8482; or &#169;.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Guidelines regarding example code blocks with command-line interfaces:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+It is RECOMMENDED to precede documentation examples of command-line usage
+of Unix shell constructs with the colon+semicolon <code>:;</code> as the placeholder
+of interactive shell prompt at start of a line followed by a single space
+character (this allows for easy copying and pasting of multi-line examples
+from documentation into command line, since the sequence would be interpreted
+by most shells as a non-fatal and non-consequential operation, running or
+short-circuiting the <code>true</code> command in place of the colon <code>:</code> character).
+</p>
+</li>
+<li>
+<p>
+For similar reasons it is RECOMMENDED to parametrize the probable variables
+in the example shell code snippets (such as URLs or filenames), especially if
+they are repeated more than once.
+</p>
+</li>
+<li>
+<p>
+Likewise, it is RECOMMENDED to organize logical chains (where the subsequent
+command should only be executed if a previous one did not fail) using the <code>&amp;&amp;</code>
+shell sequence.
+</p>
+</li>
+<li>
+<p>
+If the example command-line is longer than 70 characters, it SHOULD be
+split into multiple lines "concatenated" by trailing backslash as is common
+in shell scripts; continuation lines SHOULD be indented by at least the
+length of the shell prompt placeholder (3 spaces for the <code>:;</code> recommended
+prompt and separator that follows).
+</p>
+</li>
+<li>
+<p>
+If the command-line example block includes output from the command to be
+entered by the reader, the example command SHOULD be separated by a blank
+line from the sample (or expected) output.
+</p>
+</li>
+<li>
+<p>
+If multiple related but separate example code lines follow each other in
+the same example code block, they MAY be presented without blank lines in
+between. However, if there is also sample output, the rule above applies,
+and if the example commands continue after the sample output, it is
+additionally RECOMMENDED to separate the output from next commands by
+two blank lines.
+</p>
+</li>
+<li>
+<p>
+If an explanatory (semi-)sentence or paragraph precedes example code, that
+sentence SHOULD end with a colon <code>:</code> followed by a blank line (for <code>asciidoc</code>
+markup). If the preceding sentence or paragraph is not an introduction into
+the contents of the example, it SHOULD be formatted as a usual paragraph,
+ending with a period <code>.</code> character.
+</p>
+</li>
+<li>
+<p>
+If the sentence after a source-code example effectively continues the
+sentence interjected by the block with source-code example, that continuation
+line SHOULD start with triple-dots and a lower-case character in the first
+word. For clarity, it is RECOMMENDED to phrase the text in such a manner
+that singular sentences are not "interrupted" by large blocks of example code.
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Other typographical conventions as applicable to plaintext documents:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Line lengths SHOULD NOT exceed 78 characters, and SHOULD NOT vary greatly
+in the middle of a paragraph (the RECOMMENDED line length ranges from 66 to
+76 characters).
+</p>
+</li>
+<li>
+<p>
+Long paragraphs broken into several lines SHALL use whole-word wrapping.
+</p>
+</li>
+<li>
+<p>
+In-line short ranges of "verbatim" text, such as filenames and keywords,
+SHALL be enclosed in backticks `` (for asciidoc markup, or its equivalent
+for other formats). Verbatim text SHALL NOT be decorated otherwise (italic,
+bold, underline) if the surrounding text in the paragraph is not decorated so.
+</p>
+</li>
+<li>
+<p>
+Introduction or other stressing of terminology SHOULD be enclosed in double
+quotes.
+</p>
+</li>
+<li>
+<p>
+Sentences separated by a tiree (long-dash) SHALL use a sequence of two
+"minus" characters <code>--</code> surrounded by single SPACE characters; if such
+separation happens at end of a line, then the two minuses preceded by a
+SPACE character SHALL be the last characters in the line (no trailing SPACE,
+and no lines starting with a carried-over double-minus).
+</p>
+</li>
+<li>
+<p>
+Words joined by a dash, mathematical negative numbers and substrations
+SHALL use a single "minus" <code>-</code> character without surrounding whitespace.
+If such separation happens at end of a line, then the "minus" character
+SHALL be the last characters in the line (no trailing SPACE, and no lines
+starting with a carried-over minus).
+</p>
+</li>
+</ul></div>
+</li>
+</ul></div>
+<div class="paragraph"><p>The same markup recommendation (<code>asciidoc</code> or plain-text ASCII preference)
+applies to contents of the blocks of in-code comments in programmatic source
+code files and scripts, which may be parsed out into separate text files
+and rendered or otherwise automatically processed to become man-pages,
+HTML pages for up-to-date website documentation, etc., by default&#8201;&#8212;&#8201;unless
+the chosen and agreed tool set to generate documentation from source code
+for the whole project dictates another specific markup (JavaDoc, Doxygen,
+etc.&#8201;&#8212;&#8201;and such tool and markup should be consistent for all of the
+project&#8217;s code in a specific programming language).</p></div>
+<div class="paragraph"><p>Written documentation intended for consumption in non-plaintext markup (e.g.
+converted to PDF, MAN or HTML pages) and proposed changes to such documentation
+SHOULD be inspected in a final processed format by author before committing the
+pull request: it may happen that escape characters, careful line breaks, etc.
+in the source markup are needed for the final document to be rendered properly.
+It is RECOMMENDED that such final format be also checked with a programmatic
+spell-checker (for example in a desktop word processor program), in order to
+avoid "typos" and subsequent pull requests to fix them.</p></div>
+</div>
+        </div>  <!-- /.col-md-12 -->
+    </div>  <!-- /.row -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/42ity.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="js/asciidoc.js"></script>
+    <!-- Install TOC and/or footnotes (if necessary) -->
+    <script type="text/javascript">asciidoc.install(2);</script>
+
+    <!-- Remove footnotes if empty block -->
+    <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>
+
+    <script type="text/javascript">$(function(){ if ($("#dropdown-menu-versions")) $("#dropdown-menu-versions").parent().remove(); });</script>
+    </div> <!-- page -->
+  </body>
+</html>

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="generator" content="AsciiDoc 8.6.9, html5 backend 4.5.0">
+    <title>Collective Code Construction Contract</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Pieter Hintjens">
+    <!-- AsciiDoc Bootstrap styles -->
+    <link rel="stylesheet" type="text/css" id="bootstrapTheme" href="css/asciidoc-bootstrap.min.css">
+
+    <!--[if (lt IE 9) & (!IEMobile)]>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <!-- 42ITy stylesheet -->
+    <link rel="stylesheet" type="text/css" href="css/42ity.css">
+
+    <!-- favorite icon -->
+    <link rel="shortcut icon" href="images/icons//favicon.ico">
+  </head>
+  <body id="toc-top">
+    <div id="page">
+  <header role="banner" class="Fixed">
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+    <div class="container">
+
+        <div class="navbar-header">
+          <a class="navbar-brand" href="./">42ITy</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div> <!-- /.navbar-header -->
+
+        <div class="navbar-collapse collapse">
+            <!-- Fixed navbar -->
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Download<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="source.html">Source code</a></li>
+                        <li><a href="binaries.html">Binaries</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="hcl.html">Supported Hardware</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="presentation.html">Overall presentation</a></li>
+                        <li><a href="contributing.html">Contributor guide</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div> <!-- /.navbar-collapse -->
+
+    </div>  <!-- /.container -->
+    </nav>
+  </header>
+
+
+  <div id="content" class="container">
+
+    <div class="row">
+
+
+
+        <div class="col-md-12" role="main">
+
+<div class="section">
+    <h1 class="page-header" id="collective_code_construction_contract">Collective Code Construction Contract</h1>
+<div class="paragraph"><p>The Collective Code Construction Contract (C4) is an evolution of the github.com
+
+<a href="https://help.github.com/articles/about-pull-requests/">Fork + Pull Model</a>,
+aimed at providing an optimal collaboration model for free software projects.</p></div>
+<div class="paragraph"><p>C4 was created by Pieter Hintjens, originally for the ZeroMQ project, and is
+available as a ZeroMQ RFC (
+<a href="https://rfc.zeromq.org/spec:42/C4/">C4 (Collective Code Construction Contract)</a> ).</p></div>
+<div class="paragraph"><p>This C4 version is based on revision 2 of the C4 specification, and limits
+applicable license to GNU General Public License version 2 or (at your option)
+any later version) for the 42ITy&#8482; project.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="license">License</h1>
+<div class="paragraph"><p>Copyright (c) 2009-2016 Pieter Hintjens.</p></div>
+<div class="paragraph"><p>This Specification is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 3 of the License, or (at your option) any
+later version.</p></div>
+<div class="paragraph"><p>This Specification is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.</p></div>
+<div class="paragraph"><p>You should have received a copy of the GNU General Public License along with
+this program; if not, see <a href="http://www.gnu.org/licenses">http://www.gnu.org/licenses</a>.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="abstract">Abstract</h1>
+<div class="paragraph"><p>C4 provides a standard process for contributing, evaluating and discussing
+improvements on software projects. It defines specific technical requirements
+for projects like a style guide, unit tests, <code>git</code> and similar platforms. It
+also establishes different personas for projects, with clear and distinct
+duties. C4 specifies a process for documenting and discussing issues including
+seeking consensus and clear descriptions, use of "pull requests" and systematic
+reviews.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="language">Language</h1>
+<div class="paragraph"><p>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in 
+<a href="http://tools.ietf.org/html/rfc2119">IETF RFC 2119</a>.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="1_goals">1. Goals</h1>
+<div class="paragraph"><p>C4 is meant to provide a reusable optimal collaboration model for open source
+software projects. It has these specific goals:</p></div>
+<ol>
+<li>
+To maximize the scale and diversity of the community around a project, by
+reducing the friction for new Contributors and creating a scaled participation
+model with strong positive feedbacks;
+</li>
+<li>
+To relieve dependencies on key individuals by separating different skill sets
+so that there is a larger pool of competence in any required domain;
+</li>
+<li>
+To allow the project to develop faster and more accurately, by increasing the
+diversity of the decision making process;
+</li>
+<li>
+To support the natural life cycle of project versions from experimental
+through to stable, by allowing safe experimentation, rapid failure, and
+isolation of stable code;
+</li>
+<li>
+To reduce the internal complexity of project repositories, thus making it
+easier for Contributors to participate and reducing the scope for error;
+</li>
+<li>
+To enforce collective ownership of the project, which increases economic
+incentive to Contributors and reduces the risk of hijack by hostile entities.
+</li>
+</ol>
+</div>
+<div class="section">
+    <h1 class="page-header" id="2_design">2. Design</h1>
+<h2 id="2_1_preliminaries">2.1. Preliminaries</h2>
+<ol>
+<li>
+The project SHALL use the git distributed revision control system.
+</li>
+<li>
+The project SHALL be hosted on github.com or equivalent, herein called the
+"Platform".
+</li>
+<li>
+The project SHALL use the Platform issue tracker.
+</li>
+<li>
+The project SHOULD have clearly documented guidelines for code style.
+</li>
+<li>
+A "Contributor" is a person who wishes to provide a patch, being a set of
+commits that solve some clearly identified problem.
+</li>
+<li>
+A "Maintainer" is a person who merges patches to the project. Maintainers are
+not developers; their job is to enforce process.
+</li>
+<li>
+Contributors SHALL NOT have commit access to the repository unless they are
+also Maintainers.
+</li>
+<li>
+Maintainers SHALL have commit access to the repository.
+</li>
+<li>
+Everyone, without distinction or discrimination, SHALL have an equal right to
+become a Contributor under the terms of this contract.
+</li>
+</ol>
+<h2 id="2_2_licensing_and_ownership">2.2. Licensing and Ownership</h2>
+<ol>
+<li>
+The project SHALL use the GNU General Public License version 2 of the License
+or (at your option) any later version.
+</li>
+<li>
+All contributions to the project source code ("patches") SHALL use the same
+license as the project.
+</li>
+<li>
+All patches are owned by their authors. There SHALL NOT be any copyright
+assignment process.
+</li>
+<li>
+Each Contributor SHALL be responsible for identifying themselves in the
+project Contributor list.
+</li>
+</ol>
+<h2 id="2_3_patch_requirements">2.3. Patch Requirements</h2>
+<ol>
+<li>
+Maintainers and Contributors MUST have a Platform account and SHOULD use their
+real names or a well-known alias.
+</li>
+<li>
+A patch SHOULD be a minimal and accurate answer to exactly one identified and
+agreed problem.
+</li>
+<li>
+A patch MUST adhere to the code style guidelines of the project if these are
+defined.
+</li>
+<li>
+A patch MUST adhere to the "Evolution of Public Contracts" guidelines defined
+below.
+</li>
+<li>
+A patch SHALL NOT include non-trivial code from other projects unless the
+Contributor is the original author of that code.
+</li>
+<li>
+A patch MUST compile cleanly and pass project self-tests on at least the
+principle target platform.
+</li>
+<li>
+A patch commit message MUST consist of a single short (less than 50
+characters) line stating the problem ("Problem: &#8230;") being solved, followed by
+a blank line and then the proposed solution ("Solution: &#8230;").
+</li>
+<li>
+A "Correct Patch" is one that satisfies the above requirements.
+</li>
+</ol>
+<h2 id="2_4_development_process">2.4. Development Process</h2>
+<ol>
+<li>
+Change on the project SHALL be governed by the pattern of accurately
+identifying problems and applying minimal, accurate solutions to these problems.
+</li>
+<li>
+To request changes, a user SHOULD log an issue on the project Platform issue
+tracker.
+</li>
+<li>
+The user or Contributor SHOULD write the issue by describing the problem they
+face or observe.
+</li>
+<li>
+The user or Contributor SHOULD seek consensus on the accuracy of their
+observation, and the value of solving the problem.
+</li>
+<li>
+Users SHALL NOT log feature requests, ideas, suggestions, or any solutions to
+problems that are not explicitly documented and provable.
+</li>
+<li>
+Thus, the release history of the project SHALL be a list of meaningful issues
+logged and solved.
+</li>
+<li>
+To work on an issue, a Contributor SHALL fork the project repository and then
+work on their forked repository.
+</li>
+<li>
+To submit a patch, a Contributor SHALL create a Platform pull request back to
+the project.
+</li>
+<li>
+A Contributor SHALL NOT commit changes directly to the project.
+</li>
+<li>
+If the Platform implements pull requests as issues, a Contributor MAY directly
+send a pull request without logging a separate issue.
+</li>
+<li>
+To discuss a patch, people MAY comment on the Platform pull request, on the
+commit, or elsewhere.
+</li>
+<li>
+To accept or reject a patch, a Maintainer SHALL use the Platform interface.
+</li>
+<li>
+Maintainers SHOULD NOT merge their own patches except in exceptional cases,
+such as non-responsiveness from other Maintainers for an extended period (more
+than 1-2 days).
+</li>
+<li>
+Maintainers SHALL NOT make value judgments on correct patches.
+</li>
+<li>
+Maintainers SHALL merge correct patches from other Contributors rapidly.
+</li>
+<li>
+Maintainers MAY merge incorrect patches from other Contributors with the goals
+of (a) ending fruitless discussions, (b) capturing toxic patches in the
+historical record, (c) engaging with the Contributor on improving their patch
+quality.
+</li>
+<li>
+The user who created an issue SHOULD close the issue after checking the patch
+is successful.
+</li>
+<li>
+Any Contributor who has value judgments on a patch SHOULD express these via
+their own patches.
+</li>
+<li>
+Maintainers SHOULD close user issues that are left open without action for an
+uncomfortable period of time.
+</li>
+</ol>
+<h2 id="2_5_branches_and_releases">2.5. Branches and Releases</h2>
+<ol>
+<li>
+The project SHALL have one branch ("master") that always holds the latest
+in-progress version and SHOULD always build.
+</li>
+<li>
+The project SHALL NOT use topic branches for any reason. Personal forks MAY
+use topic branches.
+</li>
+<li>
+To make a stable release a Maintainer shall tag the repository. Stable
+releases SHALL always be released from the repository master.
+</li>
+</ol>
+<h2 id="2_6_evolution_of_public_contracts">2.6. Evolution of Public Contracts</h2>
+<ol>
+<li>
+All Public Contracts (APIs or protocols) SHALL be documented.
+</li>
+<li>
+All Public Contracts SHOULD have space for extensibility and experimentation.
+</li>
+<li>
+A patch that modifies a stable Public Contract SHOULD not break existing
+applications unless there is overriding consensus on the value of doing this.
+</li>
+<li>
+A patch that introduces new features SHOULD do so using new names (a new
+contract).
+</li>
+<li>
+New contracts SHOULD be marked as "draft" until they are stable and used by
+real users.
+</li>
+<li>
+Old contracts SHOULD be deprecated in a systematic fashion by marking them as
+"deprecated" and replacing them with new contracts as needed.
+</li>
+<li>
+When sufficient time has passed, old deprecated contracts SHOULD be removed.
+</li>
+<li>
+Old names SHALL NOT be reused by new contracts.
+</li>
+</ol>
+<h2 id="2_7_project_administration">2.7. Project Administration</h2>
+<ol>
+<li>
+The project founders SHALL act as Administrators to manage the set of project
+Maintainers.
+</li>
+<li>
+The Administrators SHALL ensure their own succession over time by promoting
+the most effective Maintainers.
+</li>
+<li>
+A new Contributor who makes correct patches, who clearly understands the
+project goals, and the process SHOULD be invited to become a Maintainer.
+</li>
+<li>
+Administrators SHOULD remove Maintainers who are inactive for an extended
+period of time, or who repeatedly fail to apply this process accurately.
+</li>
+<li>
+Administrators SHOULD block or ban "bad actors" who cause stress and pain to
+others in the project. This should be done after public discussion, with a
+chance for all parties to speak. A bad actor is someone who repeatedly ignores
+the rules and culture of the project, who is needlessly argumentative or
+hostile, or who is offensive, and who is unable to self-correct their behavior
+when asked to do so by others.
+</li>
+</ol>
+</div>
+<div class="section">
+    <h1 class="page-header" id="further_reading">Further Reading</h1>
+<div class="ulist"><ul>
+<li>
+<p>
+
+<a href="http://en.wikipedia.org/wiki/Chris_Argyris">Argyris' Models 1 and 2</a> - the
+goals of C4 are consistent with Argyris' Model 2.
+</p>
+</li>
+<li>
+<p>
+
+<a href="http://en.wikipedia.org/wiki/Toyota_Kata">Toyota Kata</a> - covering the
+Improvement Kata (fixing problems one at a time) and the Coaching Kata (helping
+others to learn the Improvement Kata).
+</p>
+</li>
+</ul></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="implementations">Implementations</h1>
+<div class="ulist"><ul>
+<li>
+<p>
+The 
+<a href="http://zeromq.org">ZeroMQ community</a> uses the C4 process for many
+projects.
+</p>
+</li>
+<li>
+<p>
+
+<a href="http://www.ossec.net/">OSSEC</a> 
+<a href="https://ossec-docs.readthedocs.org/en/latest/development/oRFC/orfc-*html">uses the C4 process</a>.
+</p>
+</li>
+<li>
+<p>
+The 
+<a href="http://www.machinekit.io/">Machinekit</a> community 
+<a href="http://www.machinekit.io/about/">uses the C4 process</a>.
+</p>
+</li>
+<li>
+<p>
+The 
+<a href="http://42ity.org">42ITy&#8482; project</a> uses the C4 process for many sub-projects.
+</p>
+</li>
+</ul></div>
+</div>
+        </div>  <!-- /.col-md-12 -->
+    </div>  <!-- /.row -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/42ity.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="js/asciidoc.js"></script>
+    <!-- Install TOC and/or footnotes (if necessary) -->
+    <script type="text/javascript">asciidoc.install(2);</script>
+
+    <!-- Remove footnotes if empty block -->
+    <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>
+
+    <script type="text/javascript">$(function(){ if ($("#dropdown-menu-versions")) $("#dropdown-menu-versions").parent().remove(); });</script>
+    </div> <!-- page -->
+  </body>
+</html>

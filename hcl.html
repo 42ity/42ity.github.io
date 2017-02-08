@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="css/42ity.css">
 
     <!-- favorite icon -->
-    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="images/icons//favicon.ico">
   </head>
   <body id="toc-top">
     <div id="page">
@@ -54,6 +54,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="hcl.html">Supported Hardware</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="presentation.html">Overall presentation</a></li>
+                        <li><a href="contributing.html">Contributor guide</a></li>
                     </ul>
                 </li>
             </ul>
@@ -89,15 +92,20 @@ infrastructure monitoring solution. From the rack view to the data center
 dashboard, IPM Infrastructure allows IT professionals to understand and monitor
 data center power, environmental and physical capacity metrics, all within the
 context of their IT infrastructure.</p></div>
-<div class="paragraph"><p>With all the flexibility of the 42ITy™ Open Source data center monitoring
+<div class="paragraph"><p>With all the flexibility of the 42ITy&#8482; Open Source data center monitoring
 software stack,
 
 <a href="http://www.eaton.eu/ipminfrastructure">Eaton IPM Infrastructure</a> simplifies
 complexity – so you can focus on what really matters.</p></div>
 </div>
+        </div>  <!-- /.col-md-12 -->
+    </div>  <!-- /.row -->
     <script src="js/jquery.min.js"></script>
     <script src="js/42ity.js"></script>
     <script src="./js/bootstrap.min.js"></script>
+    <script src="js/asciidoc.js"></script>
+    <!-- Install TOC and/or footnotes (if necessary) -->
+    <script type="text/javascript">asciidoc.install(2);</script>
 
     <!-- Remove footnotes if empty block -->
     <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>

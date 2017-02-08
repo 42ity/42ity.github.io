@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="generator" content="AsciiDoc 8.6.9, html5 backend 4.5.0">
+    <title>42ITy Contributor guide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- AsciiDoc Bootstrap styles -->
+    <link rel="stylesheet" type="text/css" id="bootstrapTheme" href="css/asciidoc-bootstrap.min.css">
+
+    <!--[if (lt IE 9) & (!IEMobile)]>
+        <script src="js/html5shiv.min.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+    <!-- 42ITy stylesheet -->
+    <link rel="stylesheet" type="text/css" href="css/42ity.css">
+
+    <!-- favorite icon -->
+    <link rel="shortcut icon" href="images/icons//favicon.ico">
+  </head>
+  <body id="toc-top">
+    <div id="page">
+  <header role="banner" class="Fixed">
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+
+    <div class="container">
+
+        <div class="navbar-header">
+          <a class="navbar-brand" href="./">42ITy</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div> <!-- /.navbar-header -->
+
+        <div class="navbar-collapse collapse">
+            <!-- Fixed navbar -->
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Download<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="source.html">Source code</a></li>
+                        <li><a href="binaries.html">Binaries</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="hcl.html">Supported Hardware</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="presentation.html">Overall presentation</a></li>
+                        <li><a href="contributing.html">Contributor guide</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div> <!-- /.navbar-collapse -->
+
+    </div>  <!-- /.container -->
+    </nav>
+  </header>
+
+
+  <div id="content" class="container">
+
+    <div class="row">
+
+
+
+        <div class="col-md-12" role="main">
+
+<div class="section">
+    <h1 class="page-header" id="42ity_contributor_guide">42ITy Contributor guide</h1>
+<div class="paragraph"><p>There are many ways you can help make 42ITy&#8482; better!</p></div>
+<div class="paragraph"><p>This guide will help answer common questions you may have during your first and
+further contribution.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="license">License</h1>
+<div class="paragraph"><p>The project 42ITy&#8482; uses the
+<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GNU General Public
+License v2+</a> license. Refer to the LICENSE file available in each 42ITy&#8482;
+internal sub-projects.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="contribution_process">Contribution Process</h1>
+<div class="paragraph"><p>The project 42ITy&#8482; adheres to the
+
+<a href="c4.html">C4 (Collective Code Construction Contract)</a> process for
+contributions.</p></div>
+<div class="paragraph"><p>Please read this document if you are unfamiliar with it.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="coding_and_documentation_style_guides">Coding and documentation style guides</h1>
+<div class="paragraph"><p>The project 42ITy&#8482; uses:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+the 
+<a href="class.html">CLASS (C Language Style for Scalability)</a> guide for code
+style.
+</p>
+</li>
+<li>
+<p>
+the 
+<a href="doc-recommendation.html">Documentation Recommendation</a> for
+documentation style.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Please read these documents if you are unfamiliar with them.</p></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="developer_certification_of_origin_dco">Developer Certification of Origin (DCO)</h1>
+<div class="paragraph"><p>To make a good faith effort to ensure the criteria of the GPL License are met,
+42ITy&#8482; requires the Developer Certificate of Origin (DCO) process to be
+followed.</p></div>
+<div class="paragraph"><p>The DCO is an attestation attached to every contribution made by every
+developer. In the commit message of the contribution, the developer simply adds
+a Signed-off-by statement and thereby agrees to the DCO, which you can find
+below or at 
+<a href="http://developercertificate.org/">Developer Certificate of Origin</a>.</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the
+    best of my knowledge, is covered under an appropriate open
+    source license and I have the right under that license to
+    submit that work with modifications, whether created in whole
+    or in part by me, under the same open source license (unless
+    I am permitted to submit under a different license), as
+    Indicated in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including
+    all personal information I submit with it, including my
+    sign-off) is maintained indefinitely and may be redistributed
+    consistent with this project or the open source license(s)
+    involved.</pre>
+</div></div>
+<div class="admonition important">
+<div class="icon">
+<img src="./images/icons/important.png" alt="Important">
+</div>
+<div class="content">42ITy&#8482; does not merge any pull requests made against a
+42ITy-managed repository until each commit has been signed for the DCO.</div>
+</div>
+<h2 id="practical_example_of_commit_with_dco">Practical example of commit with DCO</h2>
+<div class="paragraph"><p>Applying the DCO is as simple as adding <em>--signoff</em> when doing a <em>git commit</em>:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>git commit --signoff</pre>
+</div></div>
+<div class="paragraph"><p>This will add the <em>Signed-off-by</em> line at the end of the commit log message. For
+example:</p></div>
+<div class="listingblock">
+<div class="content monospaced">
+<pre>commit af7daa6490a3b04ed1ae6921d5b701b9558feb2f
+Author: John Doe &lt;johndoe@some.org&gt;
+Date:   Thu Nov 17 13:45:21 2016 +0100
+
+  Problem: there is a problem
+
+  Solution: fix the problem
+
+  Signed-off-by: John Doe &lt;johndoe@some.org&gt;</pre>
+</div></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="submitting_issue">Submitting issue</h1>
+<div class="paragraph"><p>Not every contribution comes in the form of code. Submitting, confirming, and
+triaging issues is an important task for any project.</p></div>
+<div class="paragraph"><p>42ITy&#8482; project uses GitHub to track all except security issues.</p></div>
+<div class="paragraph"><p>If it&#8217;s possible please submit a minimal program that compiles and reproduces
+or show the issue.</p></div>
+<div class="admonition important">
+<div class="icon">
+<img src="./images/icons/important.png" alt="Important">
+</div>
+<div class="content">If you want to submit a security issue please contact the development
+team using 
+<a href="mailto:EatonIPCOpensource@Eaton.com">Eaton IPC Opensource</a></div>
+</div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="further_reading">Further Reading</h1>
+<div class="paragraph"><p>The Documentation section of the 
+<a href="http://42ity.org">42ITy&#8482; website</a> provides
+some complementary technical information, such as:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+
+<a href="presentation.html#rest_api_communication_interface">how to interact with 42ITy&#8482; through the REST API</a>
+</p>
+</li>
+<li>
+<p>
+
+<a href="presentation.html#how_to_create_a_new_agent">how to create new agents for 42ITy&#8482;</a>
+</p>
+</li>
+</ul></div>
+</div>
+<div class="section">
+    <h1 class="page-header" id="thanks_and_credits">Thanks and credits</h1>
+<div class="paragraph"><p>A number of technical and documentation points in 42ITy&#8482; are inspired from
+ZeroMQ ones, created and led by Pieter Hintjens. The 42ITy&#8482; team wants to
+express its undying thanks to Pieter, for everything he did and his help to
+create the foundations of the 42ITy&#8482; project!</p></div>
+<div class="paragraph"><p>The 42ITy&#8482; team also wants to thank the various projects used in the 42ITy&#8482;
+software stack, along with the Opensource Community in general. This project
+would never have been possible without these!</p></div>
+</div>
+        </div>  <!-- /.col-md-12 -->
+    </div>  <!-- /.row -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/42ity.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="js/asciidoc.js"></script>
+    <!-- Install TOC and/or footnotes (if necessary) -->
+    <script type="text/javascript">asciidoc.install(2);</script>
+
+    <!-- Remove footnotes if empty block -->
+    <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>
+
+    <script type="text/javascript">$(function(){ if ($("#dropdown-menu-versions")) $("#dropdown-menu-versions").parent().remove(); });</script>
+    </div> <!-- page -->
+  </body>
+</html>

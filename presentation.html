@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="generator" content="AsciiDoc 8.6.9, html5 backend 4.5.0">
-    <title>42ITy presentations</title>
+    <title>42ITy presentation</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- AsciiDoc Bootstrap styles -->
     <link rel="stylesheet" type="text/css" id="bootstrapTheme" href="css/asciidoc-bootstrap.min.css">
@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="css/42ity.css">
 
     <!-- favorite icon -->
-    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="images/icons//favicon.ico">
   </head>
   <body id="toc-top">
     <div id="page">
@@ -54,6 +54,9 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Documentation<span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="hcl.html">Supported Hardware</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="presentation.html">Overall presentation</a></li>
+                        <li><a href="contributing.html">Contributor guide</a></li>
                     </ul>
                 </li>
             </ul>
@@ -76,21 +79,554 @@
 
 
 
-        <div class="col-md-12" role="main">
 
+        <div class="col-md-9" role="main">
 <div class="section">
-    <h1 class="page-header" id="42ity_presentations">42ITy presentations</h1>
-<div class="paragraph"><p>This page provides details on the 42ITy project and its software architecture.</p></div>
-</div>
-<div class="section">
-    <h1 class="page-header" id="functional_overview">Functional overview</h1>
+    <h1 class="page-header" id="general_overview">General overview</h1>
+<div class="paragraph"><p>The 42ITy&#8482; project promotes the global development, distribution and
+adoption of the 42ITy&#8482; platform as a next generation Data Center Service
+Optimization enablement platform.</p></div>
+<div class="paragraph"><p>The goal is to serve developers, users and the entire data center ecosystem
+by providing a set of shared resources to grow the adoption of 42ITy&#8482; as
+the only open source, next generation Data Center Service Optimization
+enablement platform.</p></div>
+<div class="paragraph"><p>The initial 42ITy&#8482; platform is a result of more than 3 years of R&amp;D effort
+by Eaton Corporation provided to the community.  While Eaton continues to
+be a key contributor to 42ITy&#8482;, the community is already growing.  Please
+read the 
+<a href="contributing.html">Contributor guide</a> to find out how you can
+contribute.</p></div>
+<div class="paragraph"><p>The 42ITy&#8482; platform allows to connect together various software components to:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+gather and store monitoring data from devices,
+</p>
+</li>
+<li>
+<p>
+process these data to produce trends and metrics,
+</p>
+</li>
+<li>
+<p>
+provide interaction to users, through a web user interface,
+</p>
+</li>
+<li>
+<p>
+provide interaction to developers and 3rd party software, through a REST API.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>A typical integration, which serves as a reference implementation, is
+
+<a href="http://www.eaton.eu/ipminfrastructure">Eaton Intelligent Power Controller</a>:</p></div>
+<div class="paragraph"><p><span class="image">
+<img src="images/Eaton-IPC.png" alt="Eaton Intelligent Power Controller">
+</span></p></div>
+<h2 id="current_features_and_capabilities">Current features and capabilities</h2>
+<div class="ulist"><ul>
+<li>
+<p>
+Power device monitoring &amp; metrics (rack PDUs, UPSs, ATSs,…)
+</p>
+</li>
+<li>
+<p>
+Environmental monitoring &amp; metrics (temp., humidity, dew point,…)
+</p>
+</li>
+<li>
+<p>
+Historic &amp; real time data
+</p>
+</li>
+<li>
+<p>
+Composite &amp; Datacenter or IT room level metrics
+</p>
+</li>
+<li>
+<p>
+Open (REST API) communication interface
+</p>
+</li>
+<li>
+<p>
+Micro-services &amp; plug-in architecture
+</p>
+</li>
+</ul></div>
+<h2 id="future_availability">Future availability</h2>
+<div class="ulist"><ul>
+<li>
+<p>
+Builds (images &amp; packages) provided for both ARM and x86 platforms
+</p>
+</li>
+<li>
+<p>
+Easy &amp; Intuitive standards based UI (AngularJS, Bootstrap)
+</p>
+</li>
+<li>
+<p>
+Simplified asset management
+</p>
+</li>
+</ul></div>
+<h2 id="future_features_and_capabilities">Future features and capabilities</h2>
+<div class="ulist"><ul>
+<li>
+<p>
+Scale solution to large data center &amp; distributed enterprise monitoring
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+100s to 1000s of racks
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Expanded 3rd party monitoring ecosystem
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+More 3rd party power device support
+</p>
+</li>
+<li>
+<p>
+Genset monitoring
+</p>
+</li>
+<li>
+<p>
+CRAC monitoring
+</p>
+</li>
+<li>
+<p>
+3rd party sensors
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+More depending on the 42ITy&#8482; Community and partners feedback and requests.
+</p>
+</li>
+</ul></div>
 </div>
 <div class="section">
     <h1 class="page-header" id="technical_overview">Technical overview</h1>
+<div class="paragraph"><p>The 42ITy&#8482; software platform is a Service Oriented Architecture (SOA), made of a
+collection of software packages communicating through a MOM (Message-oriented
+middleware), built around the 
+<a href="http://zeromq.org">ZeroMQ</a> technology stack.</p></div>
+<div class="paragraph"><p>The software is divided in a set of independent components, called <strong>agent</strong>.</p></div>
+<div class="paragraph"><p><span class="image">
+<img src="images/42ITy-SW-arch.png" alt="42ITy SW architecture">
+</span></p></div>
+<div class="paragraph"><p>Because we expect an arbitrary number of agents to be connected together,
+42ITy&#8482; uses a central message broker called Malamute.</p></div>
+<div class="paragraph"><p>Malamute is built using the same ZeroMQ stack, so integrates with the code
+easily. The purpose of malamute is to abstract from maintaining peer-to-peer
+connections and to allow easy 1:N communication patterns without need to change
+the agent side.</p></div>
+<div class="paragraph"><p>At the moment there are three main patterns supported by Malamute broker:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+PUB / SUB, Publish and Subscribe:
+there are agents publishing messages with some topic, where others can subscribe
+to them. Broker then ensures all messages are delivered to the right destination.
+Communication is asynchronous - each PUB call is queued immediately and sending
+does not block the code.
+</p>
+</li>
+<li>
+<p>
+REQ / REP, Request and Reply:
+this is a directed 1:1 communication, usable for requesting some information
+from known place (persistence layer). It is synchronous, so blocking calling
+code until there is a result (or timeout).
+</p>
+</li>
+<li>
+<p>
+Service:
+service is a dedicated agent, which can run in more instances spawned by broker
+on demand. This is suitable for long running tasks. This is not used in
+42ITy&#8482; currently.
+</p>
+</li>
+</ul></div>
+<h2 id="mq_protocol_overview">MQ protocol overview</h2>
+<div class="paragraph"><p>42ITy&#8482; protocol consists of several layers:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Internet layer - raw libzmq/czmq sockets: this ensures messages are
+serialized, deserialized, working with sockets and abstracts the underlying OS
+layers (unix sockets, tcp sockets, &#8230;).
+</p>
+</li>
+<li>
+<p>
+Transport layer - Malamute: this does ensures correct addressing, matching
+subscribers with published messages and services.
+</p>
+</li>
+<li>
+<p>
+Application layer - fty-proto: this provides a minimal set of messages to
+encode and decode the main types of data flowing in the system.
+</p>
+</li>
+</ul></div>
+<h2 id="agent_overview">Agent overview</h2>
+<div class="paragraph"><p>Agents communicate through buses maintained by ZeroMQ library. Buses can use
+several backend technologies, most notably unix and classic TCP/IP sockets. So
+agents can be placed on the same machine or on arbitrary number of other
+machines (currently out of scope). Because basic messaging using zeromq messages
+(zmsg) is error prone with a lot of code duplication, 42ITy&#8482; project uses
+serialization library called zproto. It defines a model of message in
+declarative XML language and code is generated using a template language called
+gsl.</p></div>
+<div class="paragraph"><p>Generated code does provide nice C API for manipulating with messages as well as
+a way how to encode/decode it to/from zmsg. Thus such generated representations
+can be easily sent through zeromq channels.</p></div>
+<h3 id="actor_model">Actor model</h3>
+<div class="paragraph"><p>Agents are built on top of the
+
+<a href="https://en.wikipedia.org/wiki/Actor_model">actor model</a>.
+That means that each agent maintains its own state internally and communicate
+with the rest of the system by sending messages. The communication is
+asynchronous and agents are single threaded with the main loop. For cases where
+the single main loop is not enough due to performance reasons, agent can
+distribute workload to others using SERVICE pattern. However this is not used in
+current version of 42ITy&#8482;.</p></div>
+<h3 id="how_to_create_a_new_agent">How to create a new agent</h3>
+<div class="paragraph"><p>The 
+<a href="https://github.com/42ity/fty-example">fty-example</a> repository is an
+example agent, provided with instructions and serving as a reference on how to
+create a new 42ITy&#8482;.</p></div>
+<h2 id="rest_api_communication_interface">REST API communication interface</h2>
+<div class="paragraph"><p>42ITy&#8482; also exposes its data through a REST API.</p></div>
+<div class="paragraph"><p>Complete documentation using RAML is available:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+
+<a href="doc/rest/42ity_rest_api.raml">RAML source format</a>
+</p>
+</li>
+<li>
+<p>
+
+<a href="doc/rest/42ity_rest_api.html">RAML HTML format</a>
+</p>
+</li>
+</ul></div>
 </div>
+<div class="section">
+    <h1 class="page-header" id="42ity_8482_software_stack">42ITy&#8482; software stack</h1>
+<h2 id="42ity_8482_external_projects">42ITy&#8482; external projects</h2>
+<div class="paragraph"><p>42ITy&#8482; foundations rely on several major opensource projects, to provide some
+generic core services, such as data storage, communication with devices,
+communication between agents, web user interface and REST API, and build added
+value on top of these.</p></div>
+<h3 id="malamute">Malamute</h3>
+<div class="paragraph"><p><a href="https://github.com/zeromq/malamute">Malamute</a> is the ZeroMQ Enterprise
+Messaging Broker, providing all the enterprise messaging patterns in one box.</p></div>
+<div class="paragraph"><p>42ITy&#8482; uses Malamute as the broker connecting the different 42ITy&#8482; agents (see
+internal sub-projects).</p></div>
+<h3 id="mariadb_mysql">MariaDB - MySQL</h3>
+<div class="paragraph"><p><a href="https://mariadb.org">MariaDB</a> is one of the most popular database servers in
+the world, made by the original developers of 
+<a href="http://www.mysql.com">MySQL</a>
+and guaranteed to stay open source.</p></div>
+<div class="paragraph"><p>42ITy&#8482; uses MariaDB to store the realtime data, gathered from devices, and
+processed metrics.</p></div>
+<h3 id="nut_network_ups_tools">NUT - Network UPS Tools</h3>
+<div class="paragraph"><p><a href="http://networkupstools.org">NUT - Network UPS Tools</a> is a project which
+provides support for a wide range of power devices, such as UPS, PDU and ATS.</p></div>
+<div class="paragraph"><p>42ITy&#8482; uses NUT to gather data from network power devices.</p></div>
+<h3 id="tntnet">Tntnet</h3>
+<div class="paragraph"><p><a href="http://www.tntnet.org/">Tntnet</a> is a modular, multithreaded web application
+server for C++.</p></div>
+<div class="paragraph"><p>42ITy&#8482; uses Tntnet to serve web user interface and REST API.</p></div>
+<h2 id="42ity_8482_internal_sub_projects">42ITy&#8482; internal sub-projects</h2>
+<div class="paragraph"><p>This chapter briefly presents the different sub-projects that forms the 42ITy&#8482;
+platform. More detailed information can be found on the dedicated pages of these
+sub-projects.</p></div>
+<div class="paragraph"><p>Each of these sub-projects is available as a repository on
+
+<a href="http://github.com/42ity">42ITy</a> GitHub page.</p></div>
+<h3 id="fty_core">fty-core</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-core implements the core and central functionalities for
+42ITy.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-core">https://github.com/42ity/fty-core</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_proto">fty-proto</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-proto is the shared implementation of 42ITy&#8482; core
+protocols, using Malamute and used by the different agents (assets, metrics,
+alerts).
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-proto">https://github.com/42ity/fty-proto</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_asset">fty-asset</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-asset is the agent in charge of managing information about
+assets.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-asset">https://github.com/42ity/fty-asset</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_metric_compute">fty-metric-compute</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-metric-compute provides computation services on metrics.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-metric-compute">https://github.com/42ity/fty-metric-compute</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_metric_store">fty-metric-store</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-metric-store provides the persistance layer for metrics.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-metric-store">https://github.com/42ity/fty-metric-store</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_nut">fty-nut</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-nut is an agent that polls power devices (UPS and PDU) using
+NUT drivers, through NUT server (upsd). It collects current measurements and
+publishes them. It also collects static inventory data (assets) and publishes
+them.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-nut">https://github.com/42ity/fty-nut</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_outage">fty-outage</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-outage is the agent that generates and sends alerts when a
+device does not communicate.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-outage">https://github.com/42ity/fty-outage</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_metric_cache">fty-metric-cache</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-metric-cache is the agent providing current values of any
+metric in the system.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-metric-cache">https://github.com/42ity/fty-metric-cache</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_email">fty-email</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-email is the agent in charge of generating and sending
+email notifications.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-email">https://github.com/42ity/fty-email</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_sensor_env">fty-sensor-env</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-sensor-env is the agent communicating with environmental
+sensors to gather temperature and humidity data.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-sensor-env">https://github.com/42ity/fty-sensor-env</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_metric_tpower">fty-metric-tpower</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-metric-tpower is the agent computing total datacenters,
+rooms, rows and racks power metrics from measurements.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-metric-tpower">https://github.com/42ity/fty-metric-tpower</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_alert_engine">fty-alert-engine</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-alert-engine is the agent that evaluates rules written
+in Lua and produces alerts accordingly.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-alert-engine">https://github.com/42ity/fty-alert-engine</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_alert_list">fty-alert-list</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-alert-list is the agent that provides information about
+active and resolved alerts.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-alert-list">https://github.com/42ity/fty-alert-list</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_metric_composite">fty-metric-composite</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-metric-composite is an agent that generates composite
+metrics, that is to say metrics which are computed from several other metrics.
+Rules are defined as scripts written in Lua.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-metric-composite">https://github.com/42ity/fty-metric-composite</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_kpi_power_uptime">fty-kpi-power-uptime</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-kpi-power-uptime computes and publishes KPI (Key Performance
+Indicator) for data center power uptime, taking into account how long one of the
+main power sources was offline.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-kpi-power-uptime">https://github.com/42ity/fty-kpi-power-uptime</a>
+</p>
+</li>
+</ul></div>
+<h3 id="fty_rest">fty-rest</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Description: fty-rest is the component extending Tntnet and implementing
+42ITy&#8482; REST API.
+</p>
+</li>
+<li>
+<p>
+Repository: <a href="https://github.com/42ity/fty-rest">https://github.com/42ity/fty-rest</a>
+</p>
+</li>
+</ul></div>
+<h2 id="services_dependencies">Services dependencies</h2>
+<div class="paragraph"><p>The systemd system and service manager is responsible for controlling how
+42ITy&#8482; services are started, stopped and otherwise managed. It uses an
+event-based and dependencies based approach to optimize how services are managed
+(started, stopped, reloaded).</p></div>
+<div class="paragraph"><p>The figure bellow illustrates the dependencies relationships for services
+running on 42ITy&#8482;.</p></div>
+<div class="paragraph"><p><span class="image">
+<img src="images/42ITy-systemd-deps.png" alt="42ITy services dependencies">
+</span></p></div>
+</div>
+        </div>  <!-- /.col-md-9 -->
+        <div class="col-md-3">
+        <div id="sidebar">
+    <div class="toc2">
+<div class="panel panel-default">
+<div class="panel-heading">Table of Contents</div>
+<div class="panel-body" id="toc">
+</div>
+</div>
+    </div>
+</div>
+        </div>  <!-- /.col-md-3 -->
+    </div>  <!-- /.row -->
     <script src="js/jquery.min.js"></script>
     <script src="js/42ity.js"></script>
     <script src="./js/bootstrap.min.js"></script>
+    <script src="js/asciidoc.js"></script>
+    <!-- Install TOC and/or footnotes (if necessary) -->
+    <script type="text/javascript">asciidoc.install(3);</script>
 
     <!-- Remove footnotes if empty block -->
     <script type="text/javascript">$(function(){ if ($("#footnotes div").length == 0) $("#footnotes").parent().remove(); });</script>
