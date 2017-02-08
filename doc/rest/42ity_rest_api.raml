@@ -1,0 +1,2902 @@
+#%RAML 1.0
+title: 42ITy REST API
+description: |
+  This API allows the user to retrieve any collected information about datacenters monitored by 42ITy.
+version: v1
+
+protocols: [ HTTPS ]
+
+# Allowed URI characters: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=
+
+securitySchemes:
+  oauth_2_0:
+    description: |
+      OAuth 2.0 token credential with SSL is the token authentication mechanism supported by $42ITY.
+    type: OAuth 2.0
+
+#######################################
+#### JSON STRUCTURES DEFINITION  ######
+#######################################
+
+######## Annotation Types #############
+#######################################
+
+annotationTypes:
+  Authorization:
+    description: |
+      There are three authorization profiles.
+      1. "Anonymous" profile which allows the user to view some WebUI pages without any possible action.
+      2. "Dashboard" profile which allows the user to view all WebUI pages without any possible action, except changing its own password and updating its preferences.
+      3. "Administrator" profile which allows the user to do all possible actions.
+    properties:
+      profile:
+        description: |
+          A list of profiles with sufficient authorization for the given method.
+        type: Authorization_Profile[]
+        uniqueItems: true
+        minItems: 1
+
+  List_as_Query_Parameter:
+    description: |
+      A list of query parameters, which are a list of strings from some predetermined set – for example types of assets.
+    type: array
+    items:
+      type: string
+
+  Asset_Type_Restriction:
+    description: |
+      If there is some restriction on the type of asset that can be used, allowed ones are specified by this annotation.
+    type: Asset_Type[]
+    example:
+      - device
+      - group
+
+  Asset_Subtype_Restriction:
+    description: |
+      If there is some restriction on the subtype of asset that can be used, allowed ones are specified by this annotation.
+    type: Asset_Subtype[]
+    example:
+      - ups
+      - server
+
+######## Data Types ###################
+#######################################
+types:
+
+######## General ######################
+  Id:
+    description: |
+      Identifier of the given asset.
+    type: string
+    pattern: "^[0-9]{0,10}$"
+
+  Name:
+    description: |
+      Name of the given object.
+    type: string
+    maxLength: 50
+
+  Limited_String:
+    description: |
+      String with the limited length up to 255.
+    type: string
+    maxLength: 255
+
+  Empty_Object:
+    type: object
+
+  Identification_Label:
+    description: |
+      Identification label.
+    type: string
+    maxLength: 4
+
+  Asset_Type:
+    description: |
+      Asset type. Possible values are *datacenter*, *room*, *row*, *rack*, *device* and *group*.
+    type: string
+    enum: [datacenter, room, row, rack, device, group]
+
+  Asset_Subtype:
+    description: |
+      In the case of type "device", the subtype has to be specified. Possible values are *epdu*, *feed*, *genset*, *pdu*, *rack controller*, *router*, *server*, *storage*, *sts*, *switch*, *ups*, *vm* and *sensor*. In the case of type "group", the subtype may be *input_power*. In other cases, it must be empty.
+    type: string
+    enum: [epdu, feed, genset, pdu, rack controller, router, server, storage, sts, switch, ups, vm, input_power, sensor, ""]
+
+  Alert_State:
+    description: |
+      State of an alert. Possible values are *ALL*, *ALL-ACTIVE*, *ACTIVE*, *ACK-WIP*, *ACK-IGNORE*, *ACK-PAUSE*, *ACK-SILENCE* and *RESOLVED*. State *RESOLVED* can not be set manually – it is a result of conditions, that triggered an alert, coming back to normal values.
+    type: string
+    enum: [ALL, ALL-ACTIVE, ACTIVE, ACK-WIP, ACK-IGNORE, ACK-PAUSE, ACK-SILENCE, RESOLVED]
+
+  Configuration_Key:
+    description: |
+      Configuration setting name.
+    properties:
+      key:
+        type: string
+        pattern: "^[.-_a-zA-Z0-9]+$"
+
+  Access_Token:
+    description: |
+      Access token.
+    type: string
+    pattern: "^[-/._~+/a-zA-Z0-9]{0,255}={0,10}$"
+
+  Rule_Name:
+    description: |
+      Name of the given alert rule.
+    type: string
+    pattern: "^[-_.A-Za-z0-9@]{1,255}$"
+    example:
+      onbypass@ROZ.UPS36
+
+  Interface_name:
+    description: |
+      Interface name – has to fit specified regular expression.
+    type: string
+    pattern: "^[A-Za-z][A-Za-z0-9]{0,14}$"
+
+######## Authorization #################
+
+  Authorization_Profile:
+    description: |
+      Authorization profiles.
+    type: string
+    enum: [administrator, dashboard, anonymous]
+
+######## Parameters ###################
+
+  Container:
+    description: |
+      Identifier of an asset which is considered the container – may contain other assets.
+    properties:
+      in: Id
+
+  List_of_Asset_Types:
+    description: |
+      List of asset types.
+    properties:
+      type:
+        description: |
+          List of asset types with items separated by comma. Possible item values of the list are *datacenter*, *room*, *row*, *rack*, *device* and *group*.
+        type: string
+
+  List_of_Asset_Subtypes:
+    description: |
+      List of asset subtypes.
+    (Asset_Subtype_Restriction):
+      - epdu
+      - feed
+      - genset
+      - pdu
+      - rack controller
+      - router
+      - server
+      - storage
+      - sts
+      - switch
+      - ups
+      - vm
+      - sensor
+    properties:
+      /(sub_type|subtype)/:
+        description: |
+          List of asset subtypes with items separated by comma. Possible item values of the list are *epdu*, *feed*, *genset*, *pdu*, *rack controller*, *router*, *server*, *storage*, *sts*, *switch*, *ups*, *vm* and *sensor*.
+        type: string
+
+  List_of_Elements:
+    description: |
+      Query parameter – list of asset types or subtypes used.
+    maxProperties: 2
+    type: List_of_Asset_Types | List_of_Asset_Subtypes
+    examples:
+      List_of_types:
+        type: device,room
+      List_of_subtypes:
+        sub_type: switch,router,ups
+
+  None:
+    description: |
+      Location "none" indicates unlocated asset element.
+    type: string
+    pattern: none
+
+  Topology_Location_From:
+    description: |
+      Query parameters. Location topology starting point with additional possibilities.
+    properties:
+      from:
+        description: |
+          Either an identifier of an asset considered as the topology starting point, or value "none" indicating unlocated asset element.
+        type: Id|None
+      recursive?:
+        description: |
+          If this parameter is *true*, the recursive walk on all child elements is performed to get the full tree location topology. If this parameter is empty or unspecified, then it is treated as *false*.
+        type: string
+        enum: ["true", "false"]
+      feed_by?:
+        description: |
+          This parameter provides an opportunity to bring power topology restrictions into location topology. Value of this parameter has to be an identifier of a device. The call then returns all devices that have the given device in source power chain.
+
+          This parameter can be specified, only if parameter "filter" have the value *devices*. Using the parameter "from" set as *none* together with parameter "feed_by" is forbidden.
+        (Asset_Type_Restriction):
+          - device
+        type: Id
+      filter?:
+        description: |
+          Combinated with the recursive walk, the filter allows to return one kind of element. Allowed values are *rooms*, *rows*, *racks*, *devices*, *groups*.
+        type: string
+        enum: [rooms, rows, racks, devices, groups]
+
+  Topology_Location_To:
+    description: |
+      Query parameter. Location topology ending point.
+    properties:
+      to: Id
+
+  Location_Topology_Parameters:
+    description: |
+      Query parameters for receiving location topology from or to specified asset element.
+    maxProperties: 4
+    type: Topology_Location_From | Topology_Location_To
+
+  Topology_Power_From:
+    description: |
+      Query parameter – power topology starting point.
+    properties:
+      from?:
+        description: |
+          Serve as call for the list of devices directly powered by (or connected to) the requested device.
+        (Asset_Type_Restriction):
+          - device
+        type: Id
+
+  Topology_Power_To:
+    description: |
+      Query parameter – power topology ending point.
+    properties:
+      to?:
+        description: |
+          Serve as call for the full power chain which powers the requested device.
+        (Asset_Type_Restriction):
+          - device
+        type: Id
+
+  Datacenter_Filter:
+    description: |
+      Query parameter – specifies destination.
+    properties:
+      filter_dc?:
+        description: |
+          Serve as call for all power links, where both source and destination elements are in the specified datacenter.
+        (Asset_Type_Restriction):
+          - datacenter
+        type: Id
+
+  Group_Filter:
+    description: |
+      Query parameter – specifies destination.
+    properties:
+      filter_group?:
+        description: |
+          Serve as call for all power links, where both source and destination elements are in the specified group.
+        (Asset_Type_Restriction):
+          - group
+        type: Id
+
+  Power_Topology_Parameters:
+    description: |
+      Query parameters for receiving power topology from or to specified asset element.
+    maxProperties: 1
+    type: Topology_Power_From | Topology_Power_To | Datacenter_Filter | Group_Filter
+
+  List_of_Asset_Ids:
+    description: |
+      Query parameter – list of asset identifiers.
+    properties:
+      /(dev|arg1)/:
+        description: |
+          List of asset identifiers with items separated by comma.
+        type: string
+
+  List_of_Statistics:
+    description: |
+      Query parameter – list of requested statistics.
+    properties:
+      arg2:
+        description: |
+          List of requested statistics with items separated by comma. Possible item values are specified separately for each use.
+        type: string
+
+  Trend_Parameters:
+    description: |
+      Query parameters used for receiving filtered assets statistics.
+    properties:
+      start_ts?:
+        description: |
+          Start of the requested interval in ISO 8601 format without hyphens and colons, i.e. YYYYMMDDThhmmssZ. Not required only if parameter "relative" is specified.
+        type: string
+        pattern: "^[0-9]{14}Z$"
+      end_ts?:
+        description: |
+          End of the requested interval in ISO 8601 format without hyphens and colons, i.e. YYYYMMDDThhmmssZ. Not required only if parameter "relative" is specified.
+        type: string
+        pattern: "^[0-9]{14}Z$"
+      type?:
+        description: |
+          Type of the requested statistics. The value may be *arithmetic_mean* or *min* or *max*. If this parameter is not specified, arithmetic mean is returned.
+        type: string
+        enum: [arithmetic_mean, min, max]
+      step:
+        description: |
+          Granularity of the requested statistics. The value may be *15m* (fifteen minutes), *30m* (thirty minutes), *1h* (one hour), *8h* (eight hours) or *24h* (twenty four hours).
+        type: string
+        enum: [15m, 30m, 1h, 8h, 24h, 7d, 30d]
+      element_id:
+        description: |
+          Identifier of the requested asset element.
+        type: Id
+      source:
+        description: |
+          The name of the requested matric. Valid metric names for the given assets element can be found at /api/v1/metric/current.
+        type: string
+      relative?:
+        description: |
+          This parameter overrides parameters "start_ts" and "end_ts". It sets parameter "end_ts" to current timestamp (i.e. now) and parameter "start_ts" to current timestamp minus the value of "relative" parameter. Possible values are *24h*, *7d*, *30d* and *""* (empty string).
+
+          Value *""* behaves as if the parameter "relative" was not specified at all. It is not necessary to specify parameters "start_ts" and "end_ts" when parameter "relative" is specified – specifying them, however, does not create a conflict.
+        type: string
+        enum: [24h, 7d, 30d, ""]
+      ordered?:
+        description: |
+          This is optional parameter with possible values *true* and *false*. Default value is *false*. If this parameter is set to *true*, the returned data are ordered in ascending order.
+        type: string
+        enum: ["true", "false"]
+
+  Alerts_Parameters:
+    description: |
+      Optional query parameters which are used to receive filtered alerts list.
+    properties:
+      state?:
+        description: |
+          State of an alert. Empty value is treated as *ALL-ACTIVE*.
+        type: Alert_State
+      asset?:
+        description: Identifier of the requested asset.
+        type: Id
+      recursive?:
+        description: |
+          This parameter is used to list alerts recursively for all asset elements that belong under the specified asset element in topology. Possible values are *true* and *false*; default value is *false*.
+        type: string
+        enum: ["true", "false"]
+
+  Rules_Parameters:
+    description: |
+      Optional query parameters which are used to receive filtered alert rules.
+    properties:
+      type?:
+        description: |
+          A type of the alert rules. Possible values are *all*, *threshold*, *single*, *pattern*. If the parameter is not specified, value equals to *all*.
+        type: string
+        enum: [all, pattern, single, threshold]
+      rule_class?:
+        description: |
+          List the alert rules with the specified class only. The class is an opaque string and equals to the rule property "rule_class".
+        type: string
+
+  Sysinfo_Parameter:
+    description: Query parameter which is used to acquire additional information about the installed packages and running software.
+    properties:
+      detail:
+        description: |
+          There is only one possible value: *yes*. If the value is set to something else, the parameter is considered not specified.
+        type: string
+        enum: [yes]
+
+
+
+######## Request/response bodies ######
+
+  Ext_Attribute:
+    description: |
+      Item of the list of extended attributes. This item must contain the name of the attribute with its value, and whether this attribute is only for reading.
+    properties:
+      /^(?!read_only)\w+$/:
+        type: Limited_String
+      read_only:
+        type: boolean
+
+  Asset:
+    properties:
+      id:
+        description: |
+          Identifier of an asset.
+        type: Id
+      name:
+        description: |
+          Name of an asset.
+        type: Name
+
+  Powers_Object:
+    description: |
+      Item of a list of direct power sources of the devise. Must contain the name of the devise; this name is used for identification of the devise. May contain identifier.
+    type: Asset
+    properties:
+      src_socket?:
+        description: |
+          Identification label of the socket on the source devise.
+        type: Identification_Label
+      dest_socket?:
+        description: |
+          Identification label of the socket on the devise itself.
+        type: Identification_Label
+
+  Asset_Item:
+    description: |
+      Item of a list of assets.
+    type: Asset
+    properties:
+      type:
+        description: |
+          Type of the asset.
+        type: Asset_Type
+      sub_type:
+        description:  |
+          Subtype of the asset.
+        type: Asset_Subtype
+
+  Computed:
+    description: |
+        There are three possible properties defined only for racks, that may be specified in this list: *freeusize*, *outlet.available* and *realpower.nominal*.
+    (Asset_Type_Restriction):
+      - rack
+    properties:
+      freeusize:
+        description: |
+          Number of free U positions for the rack. The value null means not available.
+        type: integer
+      outlet.available:
+        description: |
+          The list of pdu and epdu identifiers (as keys) with number of available sockets (as a value; *null* means not available). There is special key "sum", which contains summary of all listed values, or *null* if some pdu or epdu returned null.
+        (Asset_Subtype_Restriction):
+          - pdu
+          - epdu
+        properties:
+          sum:
+            description: |
+              Summary of all listed values, or null if some pdu or epdu returned null.
+            type: integer | nil
+          /^[0-9]{0,10}$/:
+            description: |
+              The names of keys are pdu or epdu identifiers. Values are numbers of available sockets – the value *null* means not available.
+            type: integer | nil
+      realpower.nominal:
+        description: |
+          Nominal power that the rack can handle (units are watts). The value *null* means not an available number.
+        type: number
+
+  Asset_Properties:
+    description: |
+      Either body of the request on creation and update of an asset element, or response of the request on information about an asset.
+    properties:
+      name:
+        description: |
+          Name of the asset.
+        type: Name
+        example: MyDataCenter
+      type:
+        description: |
+          Asset type.
+        type: Asset_Type
+      sub_type:
+        description: |
+          In the case of type "device", this key is nonempty; in the case of type "group", the key may be *input_power*; in other cases, the key must be present but empty.
+        type: Asset_Subtype
+      status:
+        description: |
+          Current asset status. Possible values are *active*, *nonactive*, *spare* and *retired*.
+        type: string
+        enum: [active, nonactive, spare, retired]
+      location:
+        description: |
+          The name of the parent asset element. If the element is unlocated  or it is a datacenter, the key must be present but empty.
+        type: string
+        maxLength: 50
+      location_id?:
+        description: |
+          The identifier of the parent asset element.
+        type: Id
+      location_uri?:
+        description: |
+          The URI address of the parent asset element.
+        type: string
+      priority:
+        description: |
+          Priority of the asset. Value P1 means the highest priority, value P5 means the lowest priority.
+        type: string
+        enum: [P1, P2, P3, P4, P5]
+      powers?:
+        description: |
+          A list of direct power sources; only for devices. Can be empty.
+        type: Powers_Object[]
+      groups?:
+        description: |
+          A list of groups the asset belons to. Can be empty. Every item contains name and identifier of the group.
+        type: Asset[]
+      ips?:
+        description: |
+          A list of IP addresses (represented by string).
+        type: Limited_String[]
+      hostnames?:
+        description: |
+          A list of hostnames (represented by string).
+        type: Limited_String[]
+        maxItems: 1
+      macs?:
+        description: |
+          A list of mac addresses (represented by string).
+        type: Limited_String[]
+      fqdns?:
+        description: |
+          A list of fqdn names (represented by string).
+        type: Limited_String[]
+      id?:
+        description: |
+          Identifier of an asset.
+        type: Id
+      power_devices_in_uri?:
+        description: |
+          A relative URI address which is used to select all power devices powering (or being in) the requested asset. Currently: /api/v1/assets?in=<asset-id>&sub_type=epdu,pdu,feed,genset,ups.
+        type: string
+      parents?:
+        description: |
+          List of parents sorted from nearest element.
+        type: Asset_Item[]
+      computed:
+        description: |
+          For racks (only), there are three possible properties that may be specified in this list: *freeusize*, *outlet.available* and *realpower.nominal*. For other asset types, "computed" is an empty object.
+        type: Computed | Empty_Object
+      ext?:
+        description: |
+          An optional list of extended attributes, that the user is free to fill. Every element of this list must contain name of the attribute with its value, and whether this attribute is only for reading.
+        type: Ext_Attribute[]
+
+  Time:
+    description: |
+      Date time typed in the format YYYY-MM-DDThh:mm:ssZ.
+    properties:
+      time:
+        type: string
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+
+  NTP:
+    description: |
+      Network time protocol server – IP address or hostname.
+    properties:
+      ntp:
+        type: string
+        pattern: "^[-._a-zA-Z0-9]*$"
+
+  Configuration:
+    description: |
+      An object with two properties: "key" (configuration setting name) and "value".
+    type: Configuration_Key
+    properties:
+      value:
+        description: |
+          The value of the configuration setting given by "key".
+        type: string
+        pattern: "^[-._a-zA-Z0-9]*$"
+
+  Service:
+    description: |
+      Name of the given service.
+    properties:
+      service_name:
+        type: Name
+
+  Interface:
+    description: |
+      Body of a request and response concerning interfaces.
+    properties:
+      /^[A-Za-z][A-Za-z0-9]{0,14}$/:
+        description: |
+          Name of the given interface. The following properties are available:
+          1. method
+          2. address
+          3. netmask
+          4. gateway
+          5. nameservers
+        properties:
+          method?:
+            description: |
+              A kind of the method by which an IP address is assigned. Value *static* means manually assigned address, and value *dhcp* means use of Dynamic Host Configuration Protocol.
+            type: string
+            enum: [static, dhcp]
+          address?:
+            description: |
+              IP address; only IPv4 addresses are supported.
+            type: string
+            pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+          netmask?:
+            description: |
+              The subnet mask of the IP address.
+            type: string
+            pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+            example:
+              255.255.255.0
+          gateway?:
+            description: |
+              Default gateway.
+            type: string
+            pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+          nameservers?:
+            description: |
+              Preferred DNS (Domain Name System) servers.
+            type: string[]
+            items:
+              pattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$
+
+  User:
+    description: |
+      Body of a request for change of the user's password.
+    properties:
+      user:
+        description: |
+          Valid user name.
+        type: Name
+        pattern: "^[-_A-Za-z0-9]{1,50}$"
+      old_passwd:
+        description: |
+          Old (valid) password of the concerned user.
+        type: string
+        pattern: "^.{0,150}$"
+      new_passwd:
+        description: |
+          New (valid) password of the concerned user.
+        type: string
+        pattern: "^.{0,150}$"
+
+  Token_Request:
+    description: |
+      Body of a request for a new authentication token.
+    properties:
+      username:
+        description: |
+          Valid user name.
+        type: Name
+        pattern: "^[-_A-Za-z0-9]{1,50}$"
+      password:
+        description: |
+          (Valid) password of the concerned user.
+        type: string
+        pattern: "^.{0,150}$"
+      grant_type:
+        description: |
+          Property "grant_type" has to be set to *password*.
+        type: string
+        enum: [password]
+
+  Values_Unit:
+    description: |
+        Units, in which the quantity under consideration is stated.
+    type: string
+
+  Rule_Class:
+    description: |
+      The class, which includes the rule under consideration. It is designed for the user.
+    type: string
+    example:
+      Input voltage (1 phase) in UPS
+
+  Rule_Hierarchy:
+    description: |
+      Machine-readable rules classification. Begins with either *internal* or *environment* or *power*. Ends with involved subtype.
+    type: string
+    example: internal.input.voltage.1phase.ups
+
+  Rule_Description:
+    description: |
+      Detailed description of the rule given by the user.
+    type: string
+    example:
+      Input voltage 3 phase for ups ROZ.UPS36
+
+  Alert_Limit:
+    description: |
+      Limit of the quantity under consideration, with a given degree of severity. The value is either integer or floating-point.
+    properties:
+      /^(low_warning)|(low_critical)|(high_warning)|(high_critical)$/:
+        description: |
+          Low warning or low critical or high warning or high critical limit of the given quantity.
+        type: number
+
+  Alert_Action:
+    description: |
+        Determines the resulting alert action. Currently EMAIL and SMS are defined.
+    type: string
+    enum: [EMAIL, SMS]
+
+  Alert_Result:
+    description: |
+      Descriptions of results of the given alert (the quantity under consideration reaching the given limit value).
+    properties:
+      /^(low_warning)|(low_critical)|(high_warning)|(high_critical)$/:
+        description: |
+          Result of reaching the low warning or low critical or high warning or high critical limit of the given quantity.
+        properties:
+          action:
+            description: |
+              Determines the resulting alert action.
+            type: Alert_Action[]
+          severity:
+            description: |
+              Severity of the alert under consideration.
+            type: string
+            enum: [CRITICAL, WARNING]
+          description:
+            description: |
+              Description of the reason of an alert.
+            type: string
+            example:
+              Temperature in datacenter is critically high.
+
+  Alert_Evaluation:
+    description: |
+      Lua function that evaluates trigger conditions.
+    type: string
+    example:
+      function main(v1,v2,v3) if (v1 > high_critical or v2 > high_critical or v3 > high_critical) then return HIGH_CRITICAL end
+
+  Threshold_Rule:
+    description: |
+      Threshold type of alert rule.
+    properties:
+      threshold:
+        properties:
+          rule_name:
+            type: Rule_Name
+          rule_class:
+            type: Rule_Class
+          rule_hierarchy:
+            type: Rule_Hierarchy
+          rule_desc:
+            type: Rule_Description
+          target:
+            description: |
+              Internal information. Every item consists of the name of the metric under consideration and name of the observed asset – separated by "@".
+            type: string[]
+            example:
+              - voltage.input.L1@ROZ.UPS36
+              - voltage.input.L2@ROZ.UPS36
+              - voltage.input.L3@ROZ.UPS36
+          element:
+            description: |
+              Name of the conserned asset element.
+            type: Name
+            example: ROZ.UPS36
+          values_unit:
+            description: The user-defined units of the given metric.
+            type: Values_Unit
+          values:
+            type: Alert_Limit[]
+            maxItems: 4
+            uniqueItems: true
+          results:
+            type: Alert_Result[]
+            maxItems: 4
+            uniqueItems: true
+          evaluation?:
+            type: Alert_Evaluation
+
+  Single_Rule:
+    description: |
+      Single type of alert rule.
+    properties:
+      single:
+        properties:
+          rule_name:
+            type: Rule_Name
+          rule_class:
+            type: Rule_Class
+          rule_hierarchy:
+            type: Rule_Hierarchy
+          rule_desc:
+            type: Rule_Description
+          target:
+            description: |
+              Internal information. Every item consists of the name of the metric under consideration and name of the observed asset – separated by "@".
+            type: string[]
+            example:
+              - status.ups@ROZ.UPS33
+          element:
+            description: |
+              Name of the conserned asset element.
+            type: Name
+            example: ROZ.UPS36
+          values:
+            type: Alert_Limit[]
+            maxItems: 4
+            uniqueItems: true
+          results:
+            type: Alert_Result[]
+            maxItems: 4
+            uniqueItems: true
+          evaluation:
+            type: Alert_Evaluation
+
+  Pattern_Rule:
+    description: |
+      Pattern type of alert rule.
+    properties:
+      pattern:
+        properties:
+          rule_name:
+            type: Rule_Name
+          rule_class:
+            type: Rule_Class
+          rule_hierarchy:
+            type: Rule_Hierarchy
+          rule_desc:
+            type: Rule_Description
+          target:
+            description: |
+              Internal information. Regular expression which consists of the name of the metric under consideration and "@".
+            type: string
+          values_unit:
+            type: Values_Unit
+          values:
+            type: Alert_Limit[]
+            maxItems: 4
+            uniqueItems: true
+          results:
+            type: Alert_Result[]
+            maxItems: 4
+            uniqueItems: true
+          evaluation:
+            type: Alert_Evaluation
+  Import_Error:
+    description: |
+      Item of an array; contains informations about the error that occurred in the one particular row of the CSV asset description file.
+    properties:
+      first:
+        description: |
+          The concerned row number (of the row to which an error is related).
+        type: integer
+      second:
+        description: |
+          Message that indicates why the row was not successfully imported.
+        type: string
+
+  Import_Response:
+    description: |
+      Body of a response document after successful import of the CSV asset description file.
+    properties:
+      imported_lines:
+        description: |
+          Number of successfully imported rows of the CSV asset description file.
+        type: integer
+      errors:
+        description: |
+          Array that contains informations about errors occurred during attempt to import individual rows of the CSV asset description file.
+        type: Import_Error[]
+
+  Device_Item:
+    description: |
+      An item of the list of devices.
+    type: Asset
+    properties:
+      sub_type:
+        type: Asset_Subtype
+        (Asset_Subtype_Restriction):
+          - epdu
+          - feed
+          - genset
+          - pdu
+          - rack controller
+          - router
+          - server
+          - storage
+          - sts
+          - switch
+          - ups
+          - vm
+          - sensor
+
+  Power_Chain:
+    description: |
+      Power chain description.
+    properties:
+      src-id:
+        description: |
+          Source device identifier.
+        type: Id
+      src-socket?:
+        description: |
+          Number of the socket of the source device.
+        type: string
+      dst-id:
+        description: |
+          Destination device identifier.
+        type: Id
+      dst-socket?:
+        description: |
+          Number of socket of the source device.
+        type: string
+
+  Power_Response:
+    description: |
+      Body of a response to request for power topology.
+    properties:
+      devices:
+        description: |
+          Array of the requested devices.
+        type: Device_Item[]
+      powerchains:
+        description: |
+          Array with descriptions of power chains.
+        type: Power_Chain[]
+
+  Rack_Power:
+    description: |
+      Body of a response to request for rack power statistics.
+    (Asset_Type_Restriction):
+      - rack
+    type: Asset
+    properties:
+      total_power?:
+        description: |
+          Actual power consumption  (W).
+        type: number
+      avg_power_last_day?:
+        description: |
+          Average power consumption for last 24 hours in the interval [now – 24 hours, now], including both ends (W).
+        type: number
+      avg_power_last_week?:
+       description: |
+          Average power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W).
+       type: number
+      avg_power_last_month?:
+        description: |
+          Average power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W).
+        type: number
+      avg_power_last_year?:
+        description: |
+          Average power consumption for last 365 days in the interval [now – 365 days, now], including both ends (W).
+        type: number
+
+  Datacenter_Statistics:
+    description: |
+      Body of a response to request for datacenter statistics
+    (Asset_Type_Restriction):
+      - datacenter
+    type: Asset
+    properties:
+      power?:
+        description: |
+          Actual datacenter power consumption (W).
+        type: number
+      avg_power_last_day?:
+        description: |
+          Average power consumption for last 24 hours in the interval [now – 24 hours, now].
+        type: number
+      avg_power_last_week?:
+        description: |
+          Average power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W).
+        type: number
+      avg_power_last_month?:
+        description: |
+          Average power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W).
+        type: number
+      min_power_last_day?:
+        description: |
+          Minimal power consumption for last 24 hours in the interval [now – 24 hours, now], including both ends (W).
+        type: number
+      min_power_last_week?:
+        description: |
+          Minimal power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W).
+        type: number
+      min_power_last_month?:
+        description: |
+          Minimal power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W).
+        type: number
+      max_power_last_day?:
+        description: |
+          Maximal power consumption for last 24 hours in the interval [now – 24 hours, now], including both ends (W).
+        type: number
+      max_power_last_week?:
+        description: |
+          Maximal power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W).
+        type: number
+      max_power_last_month?:
+        description: |
+          Maximal power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W).
+        type: number
+      trend_power_last_day?:
+        description: |
+          Power consumption trend for last 24 hours in the interval [now – 24 hours, now], including both ends (W).
+        type: number
+      trend_power_last_week?:
+        description: |
+          Power consumption trend for last 7 days in the interval [now – 7 days, now], including both ends (W).
+        type: number
+      trend_power_last_month?:
+        description: |
+          Power consumption trend for last 30 days in the interval [now – 30 days, now], including both ends (W).
+        type: number
+      temperature?:
+        description: |
+          Average actual temperature of the datacenter (°C).
+        type: number
+      avg_temperature_last_day?:
+        description: |
+          Average temperature for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      avg_temperature_last_week?:
+        description: |
+          Average temperature for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      avg_temperature_last_month?:
+        description: |
+          Average temperature for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      min_temperature_last_day?:
+        description: |
+          Minimal temperature for last 24 hours in the interval [now – 24 hours, now], including both ends.
+        type: number
+      min_temperature_last_week?:
+        description: |
+          Minimal temperature for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      min_temperature_last_month?:
+        description: |
+          Minimal temperature for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      max_temperature_last_day?:
+        description: |
+          Maximal temperature for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      max_temperature_last_week?:
+        description: |
+          Maximal temperature for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      max_temperature_last_month?:
+        description: |
+          Maximal temperature for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      trend_temperature_last_day?:
+        description: |
+          Temperature trend for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      trend_temperature_last_week?:
+        description: |
+          Temperature trend for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      trend_temperature_last_month?:
+        description: |
+          Temperature trend for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      humidity?:
+        description: |
+          Average actual humidity of the datacenter (%).
+        type: number
+      avg_humidity_last_day?:
+        description: |
+          Average humidity for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      avg_humidity_last_week?:
+        description: |
+          Average humidity for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      avg_humidity_last_month?:
+        description: |
+          Average humidity for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      min_humidity_last_day?:
+        description: |
+          Minimal humidity for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      min_humidity_last_week?:
+        description: |
+          Minimal humidity for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      min_humidity_last_month?:
+        description: |
+          <inimal humidity for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      max_humidity_last_day?:
+        description: |
+          Maximal humidity for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      max_humidity_last_week?:
+        description: |
+          Maximal humidity for last 7 days in the interval [now – 7 days, now], including both ends (°C).
+        type: number
+      max_humidity_last_month?:
+        description: |
+          Maximal humidity for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+      trend_humidity_last_day?:
+        description: |
+         Humidity trend for last 24 hours in the interval [now – 24 hours, now], including both ends (°C).
+        type: number
+      trend_humidity_last_week?:
+        description: |
+          Humidity trend for last 7 days in the interval [now – 7days, now], including both ends (°C).
+        type: number
+      trend_humidity_last_month?:
+        description: |
+          Humidity trend for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+        type: number
+
+  Data_Item:
+    description: |
+      Item of an array that contains trend of statistics.
+    properties:
+      value:
+        description: |
+          Value of the statistics.
+        type: number
+      scale:
+        description: |
+          Scale of the data: Computed or measured value is equal to "value" times 10 to the power of "scale".
+      timestamp:
+        description: |
+          Unixtime of the computation or measurement.
+
+  Trend_Response:
+    description: |
+      Body of a response to request for statistics trends.
+    properties:
+      element_id:
+        description: |
+          Identifier of the requested asset.
+        type: Id
+      start_ts:
+        description: |
+          Start of the requested interval in ISO 8601 format without hyphens and colons, i.e. YYYYMMDDThhmmssZ. Not required only if parameter "relative" is specified.
+        type: string
+        pattern: "^[0-9]{14}Z$"
+      end_ts:
+        description: |
+          End of the requested interval in ISO 8601 format without hyphens and colons, i.e. YYYYMMDDThhmmssZ. Not required only if parameter "relative" is specified.
+        type: string
+        pattern: "^[0-9]{14}Z$"
+      units:
+        type: Values_Unit
+      type:
+        description: |
+          Type of the requested statistics. The value may be *arithmetic_mean* or *min* or *max*. If this parameter is not specified, arithmetic mean is returned.
+        type: string
+        enum: [arithmetic_mean, min, max]
+      step:
+        description: |
+          Granularity of the requested statistics. The value may be *15m* (fifteen minutes), *30m* (thirty minutes), *1h* (one hour), *8h* (eight hours) or *24h* (twenty four hours).
+        type: string
+        enum: [15m, 30m, 1h, 8h, 24h, 7d, 30d]
+      source:
+        description: |
+          The name of the requested matric. Valid metric names for the given assets element can be found at /api/v1/metric/current.
+        type: string
+      data:
+        description: |
+          The requested data.
+        type:   Data_Item[]
+
+######## Errors ######################
+  Error:
+    properties:
+      code: integer
+      condition: string
+
+
+################################
+####    URI NAMESPACE     ######
+################################
+
+######## Assets ###################
+
+/api/v1/asset:
+  post:
+    description: |
+      General call for creating one asset element of any type or group of asset elements. Body of the request *create asset* has the same structure as the one of the request *update asset* and also as the one of the response *retrieve asset informations*.
+    (Authorization):
+      profile:
+        - administrator
+    body:
+      application/json:
+        type: Asset_Properties
+        example:
+          # image version: Mon, 08 Aug 2016 08:52:16
+          name: MyServer
+          type: device
+          sub_type: server
+          location: ""
+          status: active
+          priority: P2
+          parents: [
+                   ]
+          computed: {}
+          ext: [
+                  {
+                    company: Eaton,
+                    read_only: false
+                  },
+                  {
+                    country: France,
+                    read_only: false
+                  }
+                ]
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: object
+            properties:
+              id:
+                type: Id
+            example:
+              # image version: Mon, 08 Aug 2016 08:52:16
+              id: "37"
+      400:
+        description: |
+          Bad request.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error46:
+                code: 46
+                condition: Missing required data in the request document.
+              Error47:
+                code: 47
+                condition: Unsupported value of the request document key "type" or not unique serial_no.
+              Error48a:
+                code: 48
+                condition: The request document has wrong format or an error in the syntax.
+              Error48b:
+                code: 48
+                condition: The request document is empty.
+
+      403:
+        description: |
+          Forbidden.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error51:
+                code: 51
+                condition: The request document contains the key "id".
+      404:
+        description: |
+          Not found.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error44:
+                code: 44
+                condition: The specified parent, power source or group does not exist in database.
+      500:
+        description: |
+          Internal server error.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error42a:
+                code: 42
+                condition: The asset was created, but error occurred during configuration sending of asset change notification – consult system log.
+              Error42b:
+                code: 42
+                condition: Internal error.
+  # sub
+  /export:
+    get:
+      description: |
+        Exports all asset elements (with their properties) in a CSV (comma-separated values) format.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+            # TODO
+        500:
+          description: |
+            Internal server error.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error42:
+                  code: 42
+                  condition: Internal error; problems with connection to database or database is in inconsistent state – see log for more detail.
+
+  # sub
+  /import:
+    post:
+      description: |
+        Imports CSV (comma-separated values) file containing all asset elements with their properties.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          # TODO
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              type: Import_Response
+        400:
+          description: |
+            Bad request.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error46a:
+                  code: 46
+                  condition: File "assets" is missing.
+                Error46b:
+                  code: 46
+                  condition: Mandatory columns are missing in the CSV file.
+                Error47:
+                  code: 47
+                  condition: File "assets" has bad coding or bad format.
+                Error48:
+                  code: 48
+                  condition: The request document has invalid syntax. The delimiter cannot be detected – use comma (,) semicolon (;) or tabulator.
+        405:
+          description: |
+            Method not allowed.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error45:
+                  code: 45
+                  condition: The requested method is not allowed.
+        413:
+          description: |
+            Request entity is too large.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error53:
+                  code: 53
+                  condition: Request body content size is too big.
+        500:
+          description: |
+            Internal server error.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error42a:
+                  code: 42
+                  condition: Internal error; for example, there is no connection to database.
+                Error42b:
+                  code: 42
+                  condition: Loading of the CVS file was successful, but error occurred during configuration sending of asset change notification – consult system log.
+  # sub
+  /devices:
+    get:
+      description: |
+        Retrieves the list of all devices (of chosen types) regardless the datacenter.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+      queryString:
+        description: |
+          The query parameter "subtype" is a list of asset subtypes (separated by commas). Possible item values of this list are *epdu*, *feed*, *genset*, *pdu*, *rack controller*, *router*, *server*, *storage*, *sts*, *switch*, *ups*, *vm* and *sensor*.
+        (List_as_Query_Parameter):
+          - subtype
+        type: List_of_Asset_Subtypes
+        example:
+          sub_type: router,switch,ups
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              properties:
+                devices:
+                  type: Asset[]
+              example:
+                # image version: Mon, 19 Sep 2016 07:47:38
+                devices: [
+                          {
+                            id: "5",
+                            name: serv1
+                          },
+                          {
+                            id: "26",
+                            name: SRV1-LAB
+                          }
+                        ]
+# Errors TODO
+  # sub
+  /datacenters:
+    get:
+      description: |
+        Retrieves the list of datacenters.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              properties:
+                datacenters:
+                  type: Asset[]
+              example:
+                # image version: Mon, 19 Sep 2016 07:47:38
+                datacenters: [
+                          {
+                            id: "1",
+                            name: DC1
+                          },
+                          {
+                            id: "10",
+                            name: DC-LAB
+                          }
+                        ]
+# Errors TODO
+  # sub
+  /rooms:
+    get:
+      description: |
+        Retrieves the list of rooms regardless the datacenter.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+            200:
+              description: |
+                Success.
+              body:
+                application/json:
+                  properties:
+                    rooms:
+                      type: Asset[]
+                  example:
+                    # image version: Mon, 19 Sep 2016 07:47:38
+                    rooms: [
+                              {
+                                id: "2",
+                                name: ROOM1
+                              }
+                            ]
+ # Errors TODO
+
+  # sub
+  /racks:
+    get:
+      description: |
+        Retrieves the list of racks regardless the datacenter.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+            200:
+              description: |
+                Success.
+              body:
+                application/json:
+                  properties:
+                    racks:
+                      type: Asset[]
+                  example:
+                    # image version: Mon, 19 Sep 2016 07:47:38
+                    racks: [
+                              {
+                                id: "4",
+                                name: RACK1
+                              },
+                              {
+                                id: "21",
+                                name: RACK2-LAB
+                              }
+                            ]
+# Errors TODO
+
+  # sub
+  /rows:
+    get:
+      description: |
+        Retrieves the list of rows regardless the datacenter.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+            200:
+              description: |
+                Success.
+              body:
+                application/json:
+                  properties:
+                    rows:
+                      type: Asset[]
+                  example:
+                    # image version: Mon, 19 Sep 2016 07:47:38
+                    rows: [
+                              {
+                                id: "3",
+                                name: ROW1
+                              },
+                              {
+                                id: "17",
+                                name: ROW4
+                              },
+                              {
+                                id: "18",
+                                name: ROW6
+                              }
+                            ]
+# Errors TODO
+
+  # sub
+  /groups:
+    get:
+      description: |
+        Retrieves the list of groups of asset elements.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+            200:
+              description: |
+                Success.
+              body:
+                application/json:
+                  properties:
+                    groups:
+                      type: Asset[]
+                  example:
+                    # image version: Mon, 19 Sep 2016 07:47:38
+                    groups: [
+                              {
+                                id: "9",
+                                name: group1
+                              },
+                              {
+                                id: "30",
+                                name: GROUP1-LAB
+                              }
+                            ]
+# Errors TODO
+
+  # sub
+  /{asset-id}:
+    uriParameters:
+      asset-id:
+        description: |
+          Identifier of an asset element – unsigned integer 32 bit.
+        type: Id
+    get:
+      description: |
+        Retrieves informations about the requested asset element or group of asset elements.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              type: Asset_Properties
+              example:
+                # image version: Mon, 19 Sep 2016 07:47:38
+                id: "30"
+                power_devices_in_uri: /api/v1/assets?in=30&sub_type=epdu,pdu,feed,genset,ups
+                name: GROUP1-LAB
+                status: active
+                priority: P1
+                type: group
+                location_uri: /api/v1/asset/datacenter/19
+                location_id: "19"
+                location: DC-LAB
+                groups: [
+                        ]
+                sub_type: input_power
+                ext: [
+                      {
+                        asset_tag: myasset30,
+                        read_only: true
+                      },
+                      {
+                        description: input power chain,
+                        read_only: false
+                      }
+                    ]
+                computed: {}
+# Errors TODO
+    put:
+      description: |
+        Updates the requested (existing) asset element or group of asset elements. Body of the request *update asset* has the same structure as the one of the request *create asset* and also as the one of the response *retrieve asset informations*.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Asset_Properties
+          example:
+            # image version: Mon, 08 Aug 2016 08:52:16
+            name: Rack12
+            type: rack
+            sub_type: ""
+            location: Row11
+            status: active
+            priority: P1
+            parents: [
+                     ]
+            computed: {}
+            ext: [
+                    { air_input: front,
+                      read_only: false
+                    },
+                    { u_size: "4",
+                      read_only: false
+                    }
+                  ]
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              type: object
+              properties:
+                id:
+                  type: Id
+              example:
+                # image version: Mon, 08 Aug 2016 08:52:16
+                id: "37"
+        400:
+          description: |
+            Bad request.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error48a:
+                  code: 48
+                  condition: The request document has wrong format or an error in the syntax.
+                Error48b:
+                  code: 48
+                  condition: The request document is empty.
+                Error48c:
+                  code: 48
+                  condition: The request document has keys that are not implemented yet.
+                Error47a:
+                  code: 47
+                  condition: Request document key "type" has unsupported value.
+                Error47b:
+                  code: 47
+                  condition: Serial_no is not unique.
+                Error46:
+                  code: 46
+                  condition: The request document does not contain all the required data.
+        403:
+          description: |
+            Forbidden.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error51a:
+                  code: 51
+                  condition: Request document contains the key "id".
+                Error51b:
+                  code: 51
+                  condition: More than two epdu or pdu are placed in the same rack.
+        404:
+          description: |
+            Not found.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error44:
+                  code: 44
+                  condition: Specified parent, power source or group does not exists in the database.
+        500:
+          description: |
+            Internal server error.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error42a:
+                  code: 42
+                  condition: Internal error; for example, there is no connection to database.
+                Error42b:
+                  code: 42
+                  condition: Asset was updated, but error occurred during configuration sending of asset change notification – consult system log.
+
+    delete:
+      description: |
+        Deletes the requested (existing) asset element or group of asset elements. The asset element may be deleted only if there is no child dependences.
+      (Authorization):
+        profile:
+          - administrator
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              description: |
+                Empty object.
+              type: Empty_Object
+        400:
+          description: |
+            Bad request.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error46:
+                  code: 46
+                  condition: Parameter "id" is missing.
+        404:
+          description: |
+            Not found.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error44:
+                  code: 44
+                  condition: Asset element not found.
+        409:
+          description: |
+            Conflict.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error50:
+                  code: 50
+                  condition: Delete is not possible as the requested asset contains other asset elements.
+        500:
+          description: |
+            Internal server error.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error42:
+                  code: 42
+                  condition: Asset was deleted, but error occurred during configuration sending of asset change notification – consult system log.
+
+/api/v1/assets:
+  get:
+    description: |
+      Retrieves the list of assets of specified types/subtypes.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        The first query parameter "in" is an identifier of an asset which is considered the container. The second query parameter is either "type" or "sub_type". Both are lists containing either asset types (separated by commas) or asset subtypes (separated by commas). Possible item values of the list "type" are *datacenter*, *room*, *row*, *rack*, *device* and *group*. Possible item values of the list "sub_type" are *epdu*, *feed*, *genset*, *pdu*, *rack controller*, *router*, *server*, *storage*, *sts*, *switch*, *ups*, *vm* and *sensor*.
+      (List_as_Query_Parameter):
+        - type
+        - subtype
+      type: [Container, List_of_Elements]
+      examples:
+        first:
+          in: "12"
+          type: row,rack,device
+        second:
+          in: "37"
+          sub_type: vm,pdu,router
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: Asset_Item[]
+            example:
+              # image version: Mon, 19 Sep 2016 07:47:38
+              [
+                {
+                 id: "5",
+                 name: serv1,
+                 type: device,
+                 sub_type: server
+                },
+                {
+                 id: "6",
+                 name: epdu,
+                 type: device,
+                 sub_type: epdu
+                },
+                {
+                 id: "7",
+                 name: ups,
+                 type: device,
+                 sub_type: ups
+                },
+                {
+                 id: "8",
+                 name: feed,
+                 type: device,
+                 sub_type: feed
+                }
+              ]
+ # Errors TODO
+
+######## Topology ###################
+
+/api/v1/topology/location:
+  get:
+    description: |
+      Retrieves the location topology from the specific location starting point or to the specific ending point. Or retrieves a list of unlocated asset elements of the requested type.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        It is possible to set either parameter "from" (starting point) or parameter "to" (ending point). The former one can be specified by two other parameters "recursive" (recursive walk on all child elements) and "filter" (allows to return one kind of an element). If parameter "filter" has the vaule *devices*, parameter "feed_by" (power topology restrictions) can be specified.
+      type: Location_Topology_Parameters
+      examples:
+        # image version: Tue, 23 Aug 2016 16:01:22
+        first:
+          from: "3"
+          recursive: "true"
+          feed_by: "16"
+          filter: devices
+        second:
+          to: "24"
+        third:
+          from: "1"
+        fourth:
+          from: "1"
+          recursive: "true"
+        fifth:
+          from: none
+          filter: racks
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            # TODO
+      400:
+        description: |
+          Bad request.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error52:
+                code: 52
+                condition: Parameters "from" and "to" are both non-empty.
+              Error46:
+                code: 46
+                condition: Parameters "from" and "to" are both empty.
+              Error47a:
+                code: 47
+                condition: Parameter "recursive" has bad value.
+              Error47b:
+                code: 47
+                condition: Parameter "filter" has bad value.
+              Error52a:
+                code: 52
+                condition: Wrong type of filter was used for request with parameter filter.
+              Error52b:
+                code: 52
+                condition: There was a request for unlocated asset elements feeded by device.
+
+      404:
+        description: |
+          Not found.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error44:
+                code: 44
+                condition: Value of the parameter "to" or "from" or "feed_by" refers to unknown asset element.
+
+
+/api/v1/topology/power:
+  get:
+    description: |
+      Retrieves the power topology from the specific location starting point.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        It is necessary to set one of four offered parameters. Parameters "to" and "from" accept only identifier of a device. Parameter "filter_dc" accepts only identifier of a datacenter. Parameter "filter_group" accepts only identifier of a group.
+      type: Power_Topology_Parameters
+      examples:
+        # image version: Tue, 09 Aug 2016 09:13:14
+        first:
+          from: "24"
+        second:
+          to: "20"
+        third:
+          filter_dc: "3"
+        fourth:
+          fitler_group: "16"
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: Power_Response
+            example:
+              # image version:  Mon, 19 Sep 2016 07:47:38
+              devices: [
+                        {
+                          name: UPS1-LAB,
+                          id: "22",
+                          sub_type: ups
+                        },
+                        {
+                          name: UPS2-LAB,
+                          id: "23",
+                          sub_type: ups
+                        }
+                      ]
+              powerchains: [
+                            {
+                              src-id: "35",
+                              dst-id: "23"
+                            },
+                            {
+                              src-id: "35",
+                              dst-id: "22"
+                            }
+                            ]
+ # Error TODO
+
+
+######## Metric ###################
+
+/api/v1/metric/current:
+  get:
+    description: |
+      Retrieves current values of all available metrics for the requested elements.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        List of asset identifiers separated by comma.
+      (List_as_Query_Parameter):
+        - dev
+      type: List_of_Asset_Ids
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            properties:
+              current:
+                type: object[]
+            # TODO
+
+/api/v1/metric/computed/rack_total:
+  get:
+    description: |
+      Retrieves requested rack statistics.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        First parameter "arg1" is a list of identifiers of requested racks with items separated by comma. The second parameter "arg2" is a list of requested rack power statistics with items separated by comma. Possible item values of the second list are
+        1. *total_power* – actual power consumption  (W),
+        2. *avg_power_last_day* – average power consumption for last 24 hours in the interval [now – 24 hours, now], including both ends (W),
+        3. *avg_power_last_week* – average power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W),
+        4. *avg_power_last_month* – average power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W) and
+        5. *avg_power_last_year* – average power consumption for last 365 days in the interval [now – 365 days, now], including both ends (W).
+      (List_as_Query_Parameter):
+        - arg1
+        - arg2
+      (Asset_Type_Restriction):
+        - rack
+      type: [List_of_Asset_Ids, List_of_Statistics]
+      example:
+        # image version: Tue, 09 Aug 2016 09:13:14
+        arg1: "6"
+        arg2: total_power,avg_power_last_year
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            properties:
+              rack_total:
+                type: Rack_Power[]
+            example:
+              rack_total: [
+                            {
+                              id: "21",
+                              name: RACK1-LAB,
+                              total_power: 0.000000,
+                              avg_power_last_day: 0.000000
+                            }
+                          ]
+
+# Errors TODO
+
+/api/v1/metric/computed/datacenter_indicators:
+  get:
+    description: |
+      Retrieves requested datacenter statistics.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        First parameter "arg1" is a list of identifiers of requested datacenters with items separated by comma. The second parameter "arg2" is a list of requested datacenters statistics with items separated by comma. Possible item values of the second list are
+        1. *power* – actual datacenter power consumption (W),
+        2. *avg_power_last_day* – average power consumption for last 24 hours in the interval [now – 24 hours, now],
+        3. *avg_power_last_week* – average power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W),
+        4. *avg_power_last_month* – average power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W),
+        5. *min_power_last_day* – minimal power consumption for last 24 hours in the interval [now – 24 hours, now], including both ends (W),
+        6. *min_power_last_week* – minimal power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W),
+        7. *min_power_last_month* – minimal power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W),
+        8. *max_power_last_day* – maximal power consumption for last 24 hours in the interval [now – 24 hours, now], including both ends (W),
+        9. *max_power_last_week* – maximal power consumption for last 7 days in the interval [now – 7 days, now], including both ends (W),
+        10. *max_power_last_month* – maximal power consumption for last 30 days in the interval [now – 30 days, now], including both ends (W),
+        11. *trend_power_last_day* – power consumption trend for last 24 hours in the interval [now – 24 hours, now], including both ends (W),
+        12. *trend_power_last_week* – power consumption trend for last 7 days in the interval [now – 7 days, now], including both ends (W),
+        13. *trend_power_last_month* – power consumption trend for last 30 days in the interval [now – 30 days, now], including both ends (W),
+        14. *temperature* – average actual temperature of the datacenter (°C),
+        15. *avg_temperature_last_day* – average temperature for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        16. *avg_temperature_last_week* – average temperature for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        17. *avg_temperature_last_month* – average temperature for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        18. *min_temperature_last_day* – minimal temperature for last 24 hours in the interval [now – 24 hours, now], including both ends,
+        19. *min_temperature_last_week* – minimal temperature for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        20. *min_temperature_last_month* – minimal temperature for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        21. *max_temperature_last_day* – maximal temperature for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        22. *max_temperature_last_week* – maximal temperature for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        23. *max_temperature_last_month* – maximal temperature for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        24. *trend_temperature_last_day* – temperature trend for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        25. *trend_temperature_last_week* – temperature trend for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        26. *trend_temperature_last_month* – temperature trend for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        27. *humidity* – average actual humidity of the datacenter (%),
+        28. *avg_humidity_last_day* – average humidity for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        29. *avg_humidity_last_week* – average humidity for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        30. *avg_humidity_last_month* – average humidity for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        31. *min_humidity_last_day* – minimal humidity for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        32. *min_humidity_last_week* – minimal humidity for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        33. *min_humidity_last_month* – minimal humidity for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        34. *max_humidity_last_day* – maximal humidity for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        35. *max_humidity_last_week* – maximal humidity for last 7 days in the interval [now – 7 days, now], including both ends (°C),
+        36. *max_humidity_last_month* – maximal humidity for last 30 days in the interval [now – 30 days, now], including both ends (°C),
+        37. *trend_humidity_last_day* – humidity trend for last 24 hours in the interval [now – 24 hours, now], including both ends (°C),
+        38. *trend_humidity_last_week* – humidity trend for last 7 days in the interval [now – 7days, now], including both ends (°C),
+        39. *trend_humidity_last_month* – humidity trend for last 30 days in the interval [now – 30 days, now], including both ends (°C).
+      (List_as_Query_Parameter):
+        - arg1
+        - arg2
+      (Asset_Type_Restriction):
+        - datacenter
+      type: [List_of_Asset_Ids, List_of_Statistics]
+      example:
+        arg1: "3"
+        arg2: power,trend_power_last_week
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            properties:
+              datacenter_indicators:
+                type: Datacenter_Statistics[]
+            example:
+              datacenter_indicators: [
+                                      {
+                                        id: "10",
+                                        name: DC2,
+                                        min_power_last_month: 0,
+                                        power: 0
+                                      }
+                                    ]
+  # Errors TODO
+
+/api/v1/metric/computed/average:
+  get:
+    description: |
+      Retrieves stored averaged data from within the specified time interval, of the specified type and specified granularity.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+         There are eight available parameters: "start_ts" and "end_ts" (specifying time interval), "type" (type of requested statistics), "step" (granularity), "element_id", "source", "relative" (sets "end_ts" to now and "start_ts" to now minus the value) and "ordered" (if *true*, the returned data are ordered by timestamp in ascending order).
+      type: Trend_Parameters
+      examples:
+        first:
+          # image version: 09 Aug 2016 09:13:14
+          element_id: "3"
+          start_ts: "20160821010101Z"
+          end_ts: "20160822010101Z"
+          step: 1h
+          source: average.humidity
+        second:
+          # image version: 23 Aug 2016 16:01:22
+          element_id: "10"
+          relative: 24h
+          step: 1h
+          source: realpower.default
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: Trend_Response
+
+# Example and Errors TODO
+
+/api/v1/metric/computed/uptime:
+  get:
+    description: |
+      Retrieves outage time of requested datacenters.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        A list of datacenter identifiers separated by comma.
+      (List_as_Query_Parameter):
+        - arg1
+      (Asset_Type_Restriction):
+        - datacenter
+      type: List_of_Asset_Ids
+      example:
+        # image version: Tue, 09 Aug 2016 09:13:14
+        arg1: "3"
+# Errors TODO
+
+######## Alerts ###################
+
+/api/v1/alerts/activelist:
+  get:
+    description: |
+      Retrieves alerts list optionally limited to certain state, element or all elements belonging under specified element in the topology tree.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        There are three optional query parameters, which can be used to filter alerts list. Alerts may be filtered according to the "state" or the chosen "asset". Additionally, alerts of all assets under the chosen one in topology may be required with the parameter "recursive".
+      type: Alerts_Parameters
+      examples:
+        # image version: Tue, 09 Aug 2016 09:13:14
+        first:
+          state: ACTIVE
+        second:
+          asset: "3"
+        third:
+          asset: "3"
+          recursive: "true"
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: object
+            # TODO
+      400:
+        description: |
+          Bad request.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error47a:
+                code: 47
+                condition: Value of the parameter "state" is not valid.
+              Error47b:
+                code: 47
+                condition: Value of the parameter "recursive" is not valid.
+              Error47c:
+                code: 47
+                condition: Value of the parameter "asset" is not a valid element identifier.
+              Error47d:
+                code: 47
+                condition: Value of the parameter "asset" is out of range.
+
+
+/api/v1/alerts/rules:
+  post:
+    description: |
+      Creates new alert rule.
+    (Authorization):
+      profile:
+        - administrator
+    body:
+      application/json:
+        type: Threshold_Rule | Single_Rule | Pattern_Rule
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: Threshold_Rule | Single_Rule | Pattern_Rule
+  # Example TODO
+      400:
+        description: |
+          Bad request.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error48a:
+                code: 48
+                condition: The request document is not valid json or does not conform to the specified format or schema.
+              Error48b:
+                code: 48
+                condition: The request document is valid json, however lua function contains syntax errors.
+              Error52:
+                code: 52
+                condition: There already exists an alert rule with given name.
+  get:
+    description: |
+      Retrieves list of alert rule representations, optionally limited to certain type or class of rules.
+    (Authorization):
+      profile:
+        - dashboard
+        - administrator
+    queryString:
+      description: |
+        There are two optional query parameters, which can be used to filter the list of alert rules. Alert rules may be filtered according to the "type" of the rule or according to the "rule_class".
+      type: Rules_Parameters
+      examples:
+        # image version: Tue, 09 Aug 2016 09:13:14
+        first:
+          rule_class: UPS running on bypass
+        second:
+          rule_class: Phase imbalance in UPS
+        third:
+          rule_class: Input load (1 phase) in PDU
+        fourth:
+          type: single
+
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: array
+            items: Threshold_Rule | Single_Rule | Pattern_Rule
+# Example TODO
+      400:
+        description: |
+          Bad request.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error47:
+                code: 47
+                condition: Unknown value of the parameter "type".
+
+  # sub
+  /{rule_name}:
+    uriParameters:
+      rule_name:
+        description: |
+          Name of an alert rule that is unique across the system. Rule name has to fit some regular expression.
+        type: Rule_Name
+    get:
+      description: |
+        Retrieves representation of the alert rule with the given name.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              type: Threshold_Rule | Single_Rule | Pattern_Rule
+    # Example TODO
+        400:
+          description: |
+            Bad request.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error47:
+                  code: 47
+                  condition: URI prameter "rule_name" is empty.
+                Error54:
+                  code: 54
+                  condition: An alert rule with the name given by the value of the URI prameter "rule_name" does not exist.
+    put:
+      description: |
+        Updates the requested alert rule, provided that the rule with the given name exists.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Threshold_Rule | Single_Rule | Pattern_Rule
+          example:
+            # image version: Mon, 05 Sep 2016 17:25:27
+            threshold:
+              rule_name: load.default@ROZ.UPS33
+              rule_class: Default load in UPS
+              rule_hierarchy: power.load.ups
+              rule_desc: Load percentage for ups ROZ.UPS33
+              target:
+                - load.default@ROZ.UPS33
+              element: ROZ.UPS33
+              values_unit: "%"
+              values:
+                - low_critical: 20
+                - low_warning: 30
+              results:
+                - low_critical:
+                    action:
+                      - EMAIL
+                      - SMS
+                    severity: CRITICAL
+                    description: Default load in ups is critically low.
+                - low_warning:
+                    action:
+                      - EMAIL
+                      - SMS
+                    severity: WARNING
+                    description: Default load in ups is low.
+              evaluation: function main(f1, f2, f3) local avg = (f1 + f2 + f3) / 3; local deviation = math.max (math.abs (f1 - avg), math.abs (f2 - avg), math.abs (f3 - avg)); local percentage = deviation / avg * 100; if (percentage > high_critical) then return HIGH_CRITICAL end; if (percentage > high_warning) then return HIGH_WARNING end; return OK; end
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              type: Threshold_Rule | Single_Rule | Pattern_Rule
+      # Example TODO
+        400:
+          description: |
+            Bad request.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error48a:
+                  code: 48
+                  condition: The request document is not valid json or does not conform to the specified format or schema.
+                Error48b:
+                  code: 48
+                  condition: The request document is valid json, however lua function contains syntax errors.
+                Error52:
+                  code: 52
+                  condition: There already exists an alert rule with given name.
+        404:
+          description: |
+            Not found.
+          body:
+            application/json:
+              type: Error
+              examples:
+                Error54:
+                  code: 54
+                  condition: Alert rule with the name given by the value of parameter "name" does not exist.
+
+
+/api/v1/alerts/ack/{rule_name}/{asset_name}:
+  uriParameters:
+    rule_name:
+      description: |
+        Name of an alert rule that is unique across the system. Rule name has to fit some regular expression.
+      type: Rule_Name
+    asset_name:
+      description: |
+        Name of an asset element. Asset name has to fit some regular expression. #TODO
+      type: Name
+  put:
+    description: |
+      Sets acknowledge state to an alert identified by the given rule name and name of the element.
+    (Authorization):
+      profile:
+        - administrator
+    body:
+      application/json:
+        type: object
+        properties:
+          state:
+            type: Alert_State
+            enum: [ACTIVE,ACK-WIP,ACK-IGNORE,ACK-PAUSE,ACK-SILENCE]
+        example:
+          state: ACK-PAUSE
+    responses:
+      200:
+        description: |
+          Success.
+        body:
+          application/json:
+            type: object #TODO
+      400:
+        description: |
+          Bad request.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error48:
+                code: 48
+                condition: The request document has invalid syntax.
+              Error47:
+                code: 47
+                condition: The value of the key "state" is not valid.
+              Error52:
+                code: 52
+                condition: Alert identified by values of URI parameters "rule_name" and "asset_name" can not change state to the requested one.
+      404:
+        description: |
+          Not found.
+        body:
+          application/json:
+            type: Error
+            examples:
+              Error54:
+                code: 54
+                condition: Alert identified by values of URI parameters "rule_name" and "asset_name" does not exist.
+
+######## Admin ###################
+
+/api/v1/admin:
+  description: |
+    Not yet an existing address by itself.
+
+  #sub
+  /time:
+    post:
+      description: |
+        Sets up internal system time.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+      body:
+        application/json:
+          type: Time | NTP
+          examples:
+            # image version: Fri, 02 Sep 2016 15:03:52
+            first:
+              time: 2016-09-07T17:23:00Z
+            second:
+              ntp: pool.ntp.org
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              properties:
+                time: Time
+                ntp: NTP
+
+# Errors TODO
+
+    get:
+      description: |
+        Retrieves internal system time.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              properties:
+                time: Time
+                ntp: NTP
+# Errors TODO
+  # sub
+  /config:
+    post:
+      description: |
+        Updates values of specified configuration settings or creates new configuration settings.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          properties:
+            config:
+              type: Configuration
+          example:
+            config:
+              key: smtp
+              value: 1.3.2.4
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              description: |
+                Empty object.
+              type: Empty_Object
+# Errors TODO
+    get:
+      description: |
+        Retrieves value of the specified configuration setting.
+      (Authorization):
+        profile:
+          - administrator
+      queryString:
+        description: |
+          Query parameter "key" is used to specify the requested configuration setting.
+        type: Configuration_Key
+        example:
+          # image version: Fri, 02 Sep 2016 15:03:52
+          key: smtp
+
+      responses:
+        200:
+          description: |
+            Success.
+          body:
+            application/json:
+              properties:
+                config:
+                  type: Configuration
+# Errors TODO
+
+  # sub
+  /systemctl/list:
+    get:
+      description: |
+        Retrieves a list of available services.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+# Responses and Errors TODO
+  # sub
+  /systemctl/status/{service_name}:
+    uriParameters:
+      service_name:
+        description: |
+          Name of a system service.
+        type: string
+    get:
+      description: |
+        Retrieves the status of the required service.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+
+# Responses and Errors TODO
+  # sub
+  /systemctl/start:
+    post:
+      description: |
+        Requests start of the given service.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Service
+          example:
+            # image version: Fri, 02 Sep 2016 15:03:52
+            service_name: 42ity-asset
+# Responses and Errors TODO
+
+  # sub
+  /systemctl/stop:
+    post:
+      description: |
+        Requests termination of the given service.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Service
+          example:
+            # image version: Fri, 02 Sep 2016 15:03:52
+            service_name: 42ity-asset
+# Responses and Errors TODO
+
+  # sub
+  /systemctl/restart:
+    post:
+      description: |
+        Requests restart of the given service.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Service
+          example:
+            # image version: Fri, 02 Sep 2016 15:03:52
+            service_name: 42ity-asset
+# Responses and Errors TODO
+
+  # sub
+  /systemctl/enable:
+    post:
+      description: |
+        Enables the given service to start during bootup.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Service
+          example:
+            # image version: Fri, 02 Sep 2016 15:03:52
+            service_name: 42ity-asset
+# Responses and Errors TODO
+
+  # sub
+  /systemctl/disable:
+    post:
+      description: |
+        Disables the given service to start during bootup.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Service
+          example:
+            # image version: Fri, 02 Sep 2016 15:03:52
+            service_name: 42ity-asset
+# Responses and Errors TODO
+
+  # sub
+  /netcfgs:
+    get:
+      description: |
+        Retrieves a list of configurable network interfaces.
+      (Authorization):
+        profile:
+          - administrator
+# Responses and Errors TODO
+
+  # sub
+  /netcfg/{iface_name}:
+    uriParameters:
+      iface_name:
+        description: |
+          Valid interface name (i.e. one from /api/v1/admin/netcfgs output).
+        type: Interface_name
+    get:
+      description: |
+        Retrieves settings of the specified interface.
+      (Authorization):
+        profile:
+          - administrator
+# Responses and Errors TODO
+    put:
+      description: |
+        Updates settings of the specified interface.
+      (Authorization):
+        profile:
+          - administrator
+      body:
+        application/json:
+          type: Interface
+          example:
+            # Fri, 02 Sep 2016 15:03:52
+            LAN2:
+              method: static
+              address: 192.168.1.10
+              netmask: 255.255.255.0
+              gateway: 192.168.1.1
+              nameservers:
+                - 192.168.127.1
+# Responses and Errors TODO
+  # sub
+  /ifaces:
+    get:
+      description: |
+        Retrieves list of network interfaces that are used at the moment in the system.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+# Responses and Errors TODO
+  # sub
+  /iface/{iface_name}:
+    uriParameters:
+      iface_name:
+        description: |
+          Valid interface name (i.e. one from /api/v1/admin/ifaces output).
+        type: Interface_name
+    get:
+      description: |
+        Retrieves settings of the specified interface.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+# Responses and Errors TODO
+
+  # sub
+  /license:
+    post:
+      description: |
+        Accepts current license agreement.
+      (Authorization):
+        profile:
+          - administrator
+# Responses and Errors TODO
+
+    get:
+      description: |
+        Retrieves text of the latest license agreement.
+      (Authorization):
+        profile:
+          - anonymous
+          - dashboard
+          - administrator
+# Responses and Errors TODO
+
+      # subsub
+    /status:
+      get:
+        description: |
+          Retrieves status of license acceptance.
+        (Authorization):
+          profile:
+            - anonymous
+            - dashboard
+            - administrator
+# Responses and Errors TODO
+
+  # sub
+  /passwd:
+    post:
+      description: |
+        Changes user's password.
+      (Authorization):
+        profile:
+          - dashboard
+          - administrator
+      body:
+        application/json:
+          type: User
+# Responses and Errors TODO
+
+  # sub
+  /sysinfo:
+    get:
+      description: |
+        Retrieves various system informations.
+      (Authorization):
+        profile:
+          - anonymous
+          - dashboard
+          - administrator
+      queryString:
+        description: |
+          An optional query parameter "detail" set to the value *yes* provides additional informations about the installed packages and running software.
+        type: Sysinfo_Parameter
+        example:
+        # image version: Tue, 09 Aug 2016 09:13:14
+          detail: yes
+# Responses and Errors TODO
+
+######## Email test ###################
+/api/v1/admin/email_test:
+  post:
+    description: |
+      Sends test email to the requested email address.
+      # TODO the whole call
+
+######## Oauth2 ###################
+
+/api/v1/oauth2/token:
+  post:
+    description: |
+      Retrieves a new authentication token.
+    (Authorization):
+      profile:
+        - anonymous
+        - dashboard
+        - administrator
+    body:
+      application/json:
+        type: Token_Request
+        example:
+          username: admin
+          password: pwd?1234
+          grant_type: password
+# Responses and Errors TODO
+
+/api/v1/oauth2/revoke:
+  post:
+    description: |
+      Invalidates the given token.
+    (Authorization):
+      profile:
+        - anonymous
+        - dashboard
+        - administrator
+    body:
+      application/x-www-form-urlencoded:
+        type: object
+        properties:
+          token:
+            type: Access_Token
+        example:
+          token: jgWCdeM8Ik9GbSBCVLTk9K-oRqzR-7qt7SwZSekzORx_-uqLIKsUvIKL5w==
+# Responses and Errors TODO
